@@ -37,33 +37,19 @@ _DEMO_SCENARIO_TEXTS = {
 
 @router.post("/text", response_model=IngestUnifiedResponse)
 def ingest_text(
-    payload: Optional[IngestTextRequest] = None,
-    sender_phone: Optional[str] = Form(None),
-    user_id: Optional[int] = Form(None),
-    message: Optional[str] = Form(None),
-    channel: Optional[str] = Form("SIMULATOR"),
+    payload: IngestTextRequest,
     db: Session = Depends(get_db),
 ):
-    """Ingests plain text complaints via JSON payload or Form data."""
-    if payload:
-        s_phone = payload.sender_phone
-        u_id = payload.user_id
-        msg = payload.message
-        chn = payload.channel
-    else:
-        s_phone = sender_phone
-        u_id = user_id
-        msg = message or ""
-        chn = channel or "SIMULATOR"
-
-    if not (msg or "").strip():
+    """Ingests plain text complaints via JSON payload."""
+    msg = (payload.message or "").strip()
+    if not msg:
         raise HTTPException(status_code=400, detail="Message text is required.")
 
     result = process_text_message(
-        sender_phone=s_phone,
-        user_id=u_id,
+        sender_phone=payload.sender_phone,
+        user_id=payload.user_id,
         message=msg,
-        channel=chn,
+        channel=payload.channel or "SIMULATOR",
         db=db,
     )
     return result

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AlertTriangle, ShieldAlert, RefreshCw, ArrowRight } from 'lucide-react';
+import { fetchSwarmShieldStatus } from '../lib/api';
 
 interface Outage {
   bank: string;
@@ -15,9 +16,8 @@ export const SwarmShieldBanner: React.FC = () => {
 
   const checkSwarmShield = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/v1/swarm-shield');
-      if (res.ok) {
-        const data = await res.json();
+      const data = await fetchSwarmShieldStatus();
+      if (data && data.active_outages) {
         setOutages(data.active_outages || []);
       }
     } catch (e) {

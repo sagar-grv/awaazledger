@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PhoneCall, Clock, Globe, ArrowRight, User, ShieldCheck } from 'lucide-react';
+import { fetchLiveCalls } from '../lib/api';
 
 interface LiveCall {
   call_sid: string;
@@ -21,9 +22,8 @@ export const LiveCallConsole: React.FC = () => {
 
   const fetchCalls = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/v1/calls/live');
-      if (res.ok) {
-        const data = await res.json();
+      const data = await fetchLiveCalls();
+      if (data && data.length > 0) {
         setCalls(data);
       }
     } catch {

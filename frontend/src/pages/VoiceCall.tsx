@@ -15,6 +15,7 @@ import {
   ThumbsDown,
   UserCheck,
 } from 'lucide-react';
+import { initiateCall, sendCallTurn, endCall, submitCallFeedback } from '../lib/api';
 
 interface TurnMessage {
   speaker: 'AGENT' | 'CALLER';
@@ -113,16 +114,11 @@ export const VoiceCall: React.FC = () => {
     setFeedbackSubmitted(false);
 
     try {
-      const res = await fetch('http://localhost:8000/api/v1/calls/initiate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          caller_phone: callerPhone,
-          language: language,
-          channel: 'BROWSER_WEBRTC',
-        }),
+      const data = await initiateCall({
+        caller_phone: callerPhone,
+        language: language,
+        channel: 'BROWSER_WEBRTC',
       });
-      const data = await res.json();
       setCallSid(data.call_sid);
       setCallState(data.current_state);
 
@@ -145,7 +141,7 @@ export const VoiceCall: React.FC = () => {
   const handleEndCall = async () => {
     if (callSid) {
       try {
-        await fetch(`http://localhost:8000/api/v1/calls/${callSid}/end`, { method: 'POST' });
+        await endCall(callSid);
       } catch (e) {
         console.error('End call error:', e);
       }
@@ -174,15 +170,10 @@ export const VoiceCall: React.FC = () => {
     setCustomInput('');
 
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/calls/${callSid}/turn`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          transcript: transcript,
-          dtmf_digit: dtmf,
-        }),
+      const data = await sendCallTurn(callSid, {
+        transcript: transcript,
+        dtmf_digit: dtmf,
       });
-      const data = await res.json();
       setCallState(data.current_state);
 
       if (data.dispute_code) {
@@ -263,11 +254,7 @@ export const VoiceCall: React.FC = () => {
   const handleFeedback = async (rating: string) => {
     if (!callSid) return;
     try {
-      await fetch(`http://localhost:8000/api/v1/calls/${callSid}/feedback`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rating }),
-      });
+      await submitCallFeedback(callSid, { rating, feedback_type: 'VOICE' });
       setFeedbackSubmitted(true);
     } catch (e) {
       console.error('Feedback submit error:', e);
@@ -288,12 +275,12 @@ export const VoiceCall: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="p-2 rounded-xl bg-sky-100 text-sky-800 font-extrabold text-xl">📞</span>
             <h1 className="text-xl font-bold text-paytm-darkNavy">Paytm AwaazLedger Voice Teammate</h1>
-            <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
-              Real-Time Spoken AI
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm flex items-center gap-1">
+              <Sparkles size={12} /> Sarvam AI Voice Agent (Saarika & Bulbul)
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            "Call instead of chat. Same autonomous dispute-resolution brain." Built for elderly, rural, and shop-counter UPI users.
+            "Call instead of chat. Same autonomous dispute-resolution brain." Powered by Sarvam AI Indic Speech-to-Text & Text-to-Speech for Hindi, Marathi & Hinglish shop-counter disputes.
           </p>
         </div>
 

@@ -21,7 +21,8 @@ class SarvamTTSClient:
 
 def generate_voice_reply(text: str, dispute_code: str, language: str = "hi") -> Optional[str]:
     """Converts user explanation text to voice audio file via Sarvam AI TTS API."""
-    if not (settings.ENABLE_WHATSAPP_VOICE_REPLY and settings.SARVAM_API_KEY and settings.SARVAM_TTS_ENDPOINT):
+    sarvam_enabled = getattr(settings, "ENABLE_SARVAM_REAL", False) or getattr(settings, "ENABLE_WHATSAPP_VOICE_REPLY", False)
+    if not (sarvam_enabled and settings.SARVAM_API_KEY and settings.SARVAM_TTS_ENDPOINT):
         return None
 
     try:
