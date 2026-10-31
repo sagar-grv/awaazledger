@@ -103,7 +103,7 @@ async function startWhatsApp() {
 
     sock.ev.on('messages.upsert', async (m) => {
         try {
-            if (m.type !== 'notify') return;
+            if (m.type !== 'notify' && m.type !== 'append') return;
 
             for (const msg of m.messages) {
                 // Ignore bot's own outbound messages to prevent loops
@@ -123,7 +123,7 @@ async function startWhatsApp() {
                     remoteJid === myJid ||
                     remoteJid.includes(myPhone) ||
                     (myLid && remoteJid.includes(myLid)) ||
-                    remoteJid.endsWith('@lid')
+                    (lastUserChatJid && remoteJid === lastUserChatJid)
                 );
 
                 if (msg.key.fromMe && !isSelfMessage) {
@@ -143,18 +143,12 @@ async function startWhatsApp() {
                 userChatJidMap.set(senderJid, remoteJid);
                 userChatJidMap.set(remoteJid, remoteJid);
 
-                let text = '';
+                let text = extractTextFromBaileysMessage(msg.message);
                 let messageType = 'conversation';
                 let base64Media = null;
                 let mimeType = null;
 
-                if (msg.message?.conversation) {
-                    text = msg.message.conversation;
-                    messageType = 'conversation';
-                } else if (msg.message?.extendedTextMessage?.text) {
-                    text = msg.message.extendedTextMessage.text;
-                    messageType = 'extendedTextMessage';
-                } else if (msg.message?.audioMessage) {
+                if (msg.message?.audioMessage) {
                     messageType = 'audioMessage';
                     mimeType = msg.message.audioMessage.mimetype || 'audio/ogg';
                     console.log(`[Voice Note Received] Mime: ${mimeType}`);
@@ -166,7 +160,7 @@ async function startWhatsApp() {
                     }
                 } else if (msg.message?.imageMessage) {
                     messageType = 'imageMessage';
-                    text = msg.message.imageMessage.caption || '';
+                    text = msg.message.imageMessage.caption || text || '';
                     mimeType = msg.message.imageMessage.mimetype || 'image/jpeg';
                     console.log(`[Screenshot Received] Caption: ${text}`);
                     try {
@@ -175,6 +169,8 @@ async function startWhatsApp() {
                     } catch (e) {
                         console.warn('[Could not decode image buffer]:', e.message);
                     }
+                } else if (text) {
+                    messageType = msg.message?.extendedTextMessage ? 'extendedTextMessage' : 'conversation';
                 }
 
                 console.log(`[Content] "${text || messageType}"`);
@@ -190,6 +186,7 @@ async function startWhatsApp() {
                             id: msg.key.id,
                         },
                         messageType: messageType,
+                        text: text,
                         message: msg.message,
                         base64: base64Media,
                         mimetype: mimeType,
@@ -287,8 +284,24 @@ app.get('/instance/connect/:instance', (req, res) => {
     });
 });
 
+function extractTextFromBaileysMessage(message) {
+    if (!message) return '';
+    if (message.conversation) return message.conversation;
+    if (message.extendedTextMessage?.text) return message.extendedTextMessage.text;
+    if (message.imageMessage?.caption) return message.imageMessage.caption;
+    if (message.videoMessage?.caption) return message.videoMessage.caption;
+    if (message.documentMessage?.caption) return message.documentMessage.caption;
+    if (message.ephemeralMessage?.message) return extractTextFromBaileysMessage(message.ephemeralMessage.message);
+    if (message.viewOnceMessage?.message) return extractTextFromBaileysMessage(message.viewOnceMessage.message);
+    if (message.viewOnceMessageV2?.message) return extractTextFromBaileysMessage(message.viewOnceMessageV2.message);
+    return '';
+}
+
 function resolveDestinationJid(number, cleanNumber, myPhone) {
     if (cleanNumber === myPhone) {
+        if (lastUserChatJid) {
+            return lastUserChatJid;
+        }
         return `${myPhone}@s.whatsapp.net`;
     }
     if (userChatJidMap.get(number)) {
@@ -303,7 +316,7 @@ function resolveDestinationJid(number, cleanNumber, myPhone) {
     if (cleanNumber && cleanNumber.length >= 10 && cleanNumber.length <= 13) {
         return `${cleanNumber}@s.whatsapp.net`;
     }
-    return `${cleanNumber}@s.whatsapp.net`;
+    return number.includes('@') ? number : `${cleanNumber}@s.whatsapp.net`;
 }
 
 // Outbound send text

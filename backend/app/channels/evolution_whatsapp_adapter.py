@@ -194,34 +194,56 @@ class EvolutionWhatsAppAdapter(ChannelAdapter):
 
         message_obj = data.get("message", {})
 
-        text = ""
+        text = (data.get("text") or "").strip()
         is_voice = False
         is_image = False
         media_url = None
         media_base64 = data.get("base64")
         media_mime = None
 
-        if "conversation" in message_obj:
-            text = message_obj["conversation"]
-        elif "extendedTextMessage" in message_obj:
-            text = message_obj["extendedTextMessage"].get("text", "")
-        elif "audioMessage" in message_obj:
+        def _deep_extract_text(obj: Any) -> str:
+            if not isinstance(obj, dict):
+                return ""
+            if obj.get("conversation"):
+                return str(obj["conversation"])
+            if obj.get("extendedTextMessage", {}).get("text"):
+                return str(obj["extendedTextMessage"]["text"])
+            if obj.get("imageMessage", {}).get("caption"):
+                return str(obj["imageMessage"]["caption"])
+            if obj.get("videoMessage", {}).get("caption"):
+                return str(obj["videoMessage"]["caption"])
+            if obj.get("documentMessage", {}).get("caption"):
+                return str(obj["documentMessage"]["caption"])
+            for nested in ("ephemeralMessage", "viewOnceMessage", "viewOnceMessageV2"):
+                if obj.get(nested, {}).get("message"):
+                    nested_res = _deep_extract_text(obj[nested]["message"])
+                    if nested_res:
+                        return nested_res
+            return ""
+
+        if not text and message_obj:
+            text = _deep_extract_text(message_obj)
+
+        if "audioMessage" in message_obj or data.get("messageType") == "audioMessage":
             is_voice = True
-            audio_info = message_obj["audioMessage"]
+            audio_info = message_obj.get("audioMessage", {})
             media_url = audio_info.get("url")
-            media_mime = audio_info.get("mimetype", "audio/ogg")
-            text = audio_info.get("caption", "")
-        elif "imageMessage" in message_obj:
+            media_mime = audio_info.get("mimetype", data.get("mimetype", "audio/ogg"))
+            if not text:
+                text = audio_info.get("caption", "")
+        elif "imageMessage" in message_obj or data.get("messageType") == "imageMessage":
             is_image = True
-            img_info = message_obj["imageMessage"]
+            img_info = message_obj.get("imageMessage", {})
             media_url = img_info.get("url")
-            media_mime = img_info.get("mimetype", "image/jpeg")
-            text = img_info.get("caption", "")
+            media_mime = img_info.get("mimetype", data.get("mimetype", "image/jpeg"))
+            if not text:
+                text = img_info.get("caption", "")
         elif "documentMessage" in message_obj:
             doc_info = message_obj["documentMessage"]
             media_url = doc_info.get("url")
             media_mime = doc_info.get("mimetype", "application/pdf")
-            text = doc_info.get("caption", "")
+            if not text:
+                text = doc_info.get("caption", "")
 
         msg_type = "text"
         if is_voice:

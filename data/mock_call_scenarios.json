@@ -1,0 +1,195 @@
+{
+  "version": "1.0",
+  "description": "Mock Voice Call Scenarios for Paytm AwaazLedger Hackathon Track 3 Demo",
+  "scenarios": [
+    {
+      "id": "scenario_1_instant_credit_hindi",
+      "title": "Sharma Kirana Store (Instant Bridge Credit ₹450)",
+      "language": "hi",
+      "caller_phone": "+918788021157",
+      "turns": [
+        {
+          "step": 1,
+          "caller_action": "Spoken Consent",
+          "caller_speech": "हाँ, मैं सहमत हूँ।",
+          "expected_state": "COLLECT_ISSUE_UTR"
+        },
+        {
+          "step": 2,
+          "caller_action": "Explain issue with UTR",
+          "caller_speech": "भैया शर्मा किराना पर 450 रुपये कट गए पर दुकानदार को नहीं मिला। यूटीआर 987654321012 है।",
+          "expected_state": "COLLECT_FEEDBACK",
+          "expected_decision": "AUTO_CREDIT",
+          "expected_amount": 450.0
+        },
+        {
+          "step": 3,
+          "caller_action": "Feedback",
+          "caller_speech": "बहुत बढ़िया, तुरंत पैसे आ गए। शुक्रिया।",
+          "dtmf": "1",
+          "expected_state": "ENDED"
+        }
+      ]
+    },
+    {
+      "id": "scenario_2_soundbox_offline_marathi",
+      "title": "Reliance Fresh Soundbox Offline (Marathi Spoken ₹780)",
+      "language": "mr",
+      "caller_phone": "+919876543211",
+      "turns": [
+        {
+          "step": 1,
+          "caller_action": "Spoken Consent",
+          "caller_speech": "होय, माझी संमती आहे.",
+          "expected_state": "COLLECT_ISSUE_UTR"
+        },
+        {
+          "step": 2,
+          "caller_action": "Explain issue with UTR",
+          "caller_speech": "रिलायन्स फ्रेश मध्ये 780 रुपयांचा पेमेंट केला पण साउंडबॉक्स बोलला नाही. UTR 556677889900.",
+          "expected_state": "COLLECT_FEEDBACK",
+          "expected_decision": "RECEIPT_GENERATED",
+          "expected_amount": 780.0
+        },
+        {
+          "step": 3,
+          "caller_action": "Feedback",
+          "caller_speech": "खूप छान मदत झाली.",
+          "dtmf": "1",
+          "expected_state": "ENDED"
+        }
+      ]
+    },
+    {
+      "id": "scenario_3_flight_ticket_escalate_en",
+      "title": "MakeMyTrip Flight Ticket ₹18,500 (High-Value Human Escalation)",
+      "language": "en",
+      "caller_phone": "+919876543212",
+      "turns": [
+        {
+          "step": 1,
+          "caller_action": "Spoken Consent",
+          "caller_speech": "Yes, I agree to call recording.",
+          "expected_state": "COLLECT_ISSUE_UTR"
+        },
+        {
+          "step": 2,
+          "caller_action": "Explain issue with UTR",
+          "caller_speech": "My flight booking payment of 18500 rupees failed and money got deducted. UTR 998877665544.",
+          "expected_state": "COLLECT_FEEDBACK",
+          "expected_decision": "ESCALATE_SUPERVISOR",
+          "expected_amount": 18500.0
+        },
+        {
+          "step": 3,
+          "caller_action": "Feedback",
+          "caller_speech": "Thanks for escalating quickly.",
+          "dtmf": "1",
+          "expected_state": "ENDED"
+        }
+      ]
+    },
+    {
+      "id": "scenario_4_missing_utr_fallback",
+      "title": "Elderly Caller Missing UTR (Automated WhatsApp Link Dispatched)",
+      "language": "hi",
+      "caller_phone": "+918788021157",
+      "turns": [
+        {
+          "step": 1,
+          "caller_action": "Spoken Consent",
+          "caller_speech": "हाँ बेटा रिकॉर्ड कर लो।",
+          "expected_state": "COLLECT_ISSUE_UTR"
+        },
+        {
+          "step": 2,
+          "caller_action": "Report problem without UTR",
+          "caller_speech": "दूध वाले को 200 रुपये दिए थे कट गए, पर मुझे यूटीआर नंबर नहीं पता।",
+          "expected_state": "COLLECT_FEEDBACK",
+          "expected_action": "WHATSAPP_LINK_DISPATCHED"
+        },
+        {
+          "step": 3,
+          "caller_action": "Feedback",
+          "caller_speech": "ठीक है मैं व्हाट्सएप पर देखता हूँ।",
+          "dtmf": "1",
+          "expected_state": "ENDED"
+        }
+      ]
+    },
+    {
+      "id": "scenario_5_spoken_number_words",
+      "title": "Spoken Hindi Number Words ('nau aath saat chhe...')",
+      "language": "hi",
+      "caller_phone": "+918788021157",
+      "turns": [
+        {
+          "step": 1,
+          "caller_action": "DTMF Consent",
+          "dtmf": "1",
+          "expected_state": "COLLECT_ISSUE_UTR"
+        },
+        {
+          "step": 2,
+          "caller_action": "Spoken digits",
+          "caller_speech": "450 rupaye kata tha. UTR hai nau aath saat chhe paanch chaar teen do ek shunya ek do.",
+          "expected_state": "COLLECT_FEEDBACK",
+          "expected_amount": 450.0
+        },
+        {
+          "step": 3,
+          "caller_action": "Feedback",
+          "dtmf": "1",
+          "expected_state": "ENDED"
+        }
+      ]
+    },
+    {
+      "id": "scenario_6_dtmf_keypad_only",
+      "title": "DTMF Keypad Mode (Pure DTMF Digits)",
+      "language": "en",
+      "caller_phone": "+918788021157",
+      "turns": [
+        {
+          "step": 1,
+          "caller_action": "DTMF Consent",
+          "dtmf": "1",
+          "expected_state": "COLLECT_ISSUE_UTR"
+        },
+        {
+          "step": 2,
+          "caller_action": "DTMF UTR",
+          "dtmf": "987654321012",
+          "expected_state": "CONFIRM_AMOUNT"
+        },
+        {
+          "step": 3,
+          "caller_action": "DTMF Amount",
+          "dtmf": "450",
+          "expected_state": "COLLECT_FEEDBACK"
+        },
+        {
+          "step": 4,
+          "caller_action": "DTMF Rating",
+          "dtmf": "1",
+          "expected_state": "ENDED"
+        }
+      ]
+    },
+    {
+      "id": "scenario_7_consent_refusal",
+      "title": "Consent Refusal (Safe Termination under RBI Rule)",
+      "language": "hi",
+      "caller_phone": "+918788021157",
+      "turns": [
+        {
+          "step": 1,
+          "caller_action": "Refuse consent",
+          "caller_speech": "नहीं, मुझे रिकॉर्डिंग नहीं चाहिए।",
+          "expected_state": "ENDED",
+          "expected_is_final": true
+        }
+      ]
+    }
+  ]
+}

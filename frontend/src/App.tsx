@@ -3,10 +3,21 @@ import { Chat } from './pages/Chat';
 import { Dashboard } from './pages/Dashboard';
 import { Tracker } from './pages/Tracker';
 import { Metrics } from './pages/Metrics';
-import { MessageSquare, ShieldAlert, Activity, BarChart2 } from 'lucide-react';
+import { VoiceCall } from './pages/VoiceCall';
+import { MessageSquare, ShieldAlert, Activity, BarChart2, PhoneCall } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'chat' | 'dashboard' | 'tracker' | 'metrics'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'call' | 'dashboard' | 'tracker' | 'metrics'>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam === 'call' || window.location.pathname === '/call') return 'call';
+      if (tabParam === 'tracker' || window.location.pathname === '/tracker') return 'tracker';
+      if (tabParam === 'dashboard') return 'dashboard';
+      if (tabParam === 'metrics') return 'metrics';
+    }
+    return 'chat';
+  });
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -39,6 +50,14 @@ export const App: React.FC = () => {
               <MessageSquare size={14} /> WhatsApp Simulator
             </button>
             <button
+              onClick={() => setActiveTab('call')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition ${
+                activeTab === 'call' ? 'bg-white text-paytm-darkNavy shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <PhoneCall size={14} className="text-emerald-600" /> Voice Call Teammate
+            </button>
+            <button
               onClick={() => setActiveTab('dashboard')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition ${
                 activeTab === 'dashboard' ? 'bg-white text-paytm-darkNavy shadow-sm' : 'text-slate-600 hover:text-slate-900'
@@ -69,6 +88,7 @@ export const App: React.FC = () => {
       {/* Main Content Area */}
       <main className="flex-1 p-6">
         {activeTab === 'chat' && <Chat />}
+        {activeTab === 'call' && <VoiceCall />}
         {activeTab === 'dashboard' && <Dashboard />}
         {activeTab === 'tracker' && <Tracker />}
         {activeTab === 'metrics' && <Metrics />}

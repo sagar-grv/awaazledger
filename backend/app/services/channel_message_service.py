@@ -509,14 +509,18 @@ def process_text_message(
 
         session_key = str(sender_phone or f"user_{uid}")
 
-        # Check if previous context exists in session (valid within 30 minutes)
-        prev_session = _CONVERSATION_SESSIONS.get(session_key)
-        if prev_session and (time.time() - prev_session.get("timestamp", 0) < 1800):
-            # If user previously gave amount or context in turn 1, carry it over into turn 2
-            if entities.amount is None and prev_session.get("amount") is not None:
-                entities.amount = prev_session.get("amount")
-            if entities.intent in (IntentType.UNKNOWN, IntentType.GREETING) and prev_session.get("intent") not in (IntentType.UNKNOWN, IntentType.GREETING):
-                entities.intent = prev_session.get("intent")
+        # If user explicitly greets, thanks, or acknowledges, reset conversational session
+        if entities.intent in (IntentType.GREETING, IntentType.GRATITUDE_CLOSING, IntentType.ACKNOWLEDGMENT):
+            _CONVERSATION_SESSIONS.pop(session_key, None)
+        else:
+            # Check if previous context exists in session (valid within 30 minutes)
+            prev_session = _CONVERSATION_SESSIONS.get(session_key)
+            if prev_session and (time.time() - prev_session.get("timestamp", 0) < 1800):
+                # If user previously gave amount or context in turn 1, carry it over into turn 2
+                if entities.amount is None and prev_session.get("amount") is not None:
+                    entities.amount = prev_session.get("amount")
+                if entities.intent == IntentType.UNKNOWN and prev_session.get("intent") not in (IntentType.UNKNOWN, IntentType.GREETING):
+                    entities.intent = prev_session.get("intent")
 
         # Require UTR to initiate formal dispute
         if not entities.utr:

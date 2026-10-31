@@ -16,6 +16,7 @@ from app.api.escalations import router as escalations_router
 from app.api.metrics import router as metrics_router
 from app.api.webhooks import router as webhooks_router
 from app.api.swarm import router as swarm_router
+from app.api.calls import router as calls_router
 
 
 @asynccontextmanager
@@ -54,6 +55,7 @@ app.include_router(escalations_router, prefix=settings.API_V1_STR)
 app.include_router(metrics_router, prefix=settings.API_V1_STR)
 app.include_router(webhooks_router, prefix=settings.API_V1_STR)
 app.include_router(swarm_router, prefix=settings.API_V1_STR)
+app.include_router(calls_router, prefix=settings.API_V1_STR)
 
 
 @app.get("/")

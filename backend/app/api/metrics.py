@@ -48,3 +48,10 @@ def get_agent_learning_metrics(db: Session = Depends(get_db)):
     from app.services.learning_service import AgentLearningService
     service = AgentLearningService(db)
     return service.get_learning_telemetry()
+
+
+@router.get("/calls")
+def get_voice_call_metrics(db: Session = Depends(get_db)):
+    """Returns Voice Call AI Teammate operational analytics and channel volume."""
+    service = MetricsService(db)
+    return service.get_call_metrics()

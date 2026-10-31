@@ -15,6 +15,7 @@ import {
   assignEscalation,
 } from '../lib/api';
 import { SwarmShieldBanner } from '../components/SwarmShieldBanner';
+import { LiveCallConsole } from '../components/LiveCallConsole';
 import {
   ShieldAlert,
   RefreshCw,
@@ -275,6 +276,8 @@ export const Dashboard: React.FC = () => {
       </div>
 
       <SwarmShieldBanner />
+
+      <LiveCallConsole />
 
       {/* Filter Tabs */}
       <div className="flex items-center gap-2 border-b border-slate-200 pb-2">

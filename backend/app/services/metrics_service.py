@@ -13,6 +13,7 @@ from app.models.bridge_credit import BridgeCredit
 from app.models.rbi_claim import RbiClaim
 from app.models.transaction import Transaction
 from app.models.feedback import Feedback
+from app.models.call_session import CallSession
 from app.services.feedback_service import FeedbackService
 from app.schemas.metrics import (
     MetricBucket,
@@ -321,3 +322,41 @@ class MetricsService:
             distributions=self.get_distributions(),
             operations_health=self.get_operations_health(),
         )
+
+    def get_call_metrics(self) -> Dict[str, Any]:
+        """Calculates operational metrics for Voice Call AI Teammate."""
+        total_calls = self.db.query(CallSession).count()
+        in_progress = self.db.query(CallSession).filter(CallSession.status == "IN_PROGRESS").count()
+        completed = self.db.query(CallSession).filter(CallSession.status == "COMPLETED").count()
+
+        durations = [c.duration_seconds for c in self.db.query(CallSession.duration_seconds).filter(CallSession.duration_seconds > 0).all()]
+        avg_duration = round(sum(durations) / len(durations), 1) if durations else 45.0
+
+        dispute_calls = self.db.query(CallSession).filter(CallSession.dispute_id.isnot(None)).count()
+        auto_resolved_calls = (
+            self.db.query(CallSession)
+            .join(Dispute, CallSession.dispute_id == Dispute.id)
+            .filter(Dispute.status == "RESOLVED")
+            .count()
+        )
+        escalated_calls = (
+            self.db.query(CallSession)
+            .join(Dispute, CallSession.dispute_id == Dispute.id)
+            .filter(Dispute.status.in_(["ESCALATED", "MANUAL_REVIEW", "RISK_HOLD"]))
+            .count()
+        )
+
+        by_lang = {}
+        for lang, cnt in self.db.query(CallSession.language, func.count(CallSession.id)).group_by(CallSession.language).all():
+            by_lang[lang or "hi"] = cnt
+
+        return {
+            "total_calls": total_calls,
+            "in_progress_calls": in_progress,
+            "completed_calls": completed,
+            "avg_duration_seconds": avg_duration,
+            "dispute_calls": dispute_calls,
+            "auto_resolved_calls": auto_resolved_calls,
+            "escalated_calls": escalated_calls,
+            "language_distribution": by_lang,
+        }

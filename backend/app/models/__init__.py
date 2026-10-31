@@ -9,6 +9,9 @@ from app.models.rbi_claim import RbiClaim
 from app.models.escalation import Escalation
 from app.models.consent import Consent
 from app.models.learning import AgentLearningEntry
+from app.models.call_session import CallSession
+from app.models.call_turn import CallTurn
+from app.models.call_feedback import CallFeedback
 
 __all__ = [
     "User",
@@ -22,4 +25,7 @@ __all__ = [
     "Escalation",
     "Consent",
     "AgentLearningEntry",
+    "CallSession",
+    "CallTurn",
+    "CallFeedback",
 ]

@@ -68,6 +68,17 @@ class Settings(BaseSettings):
     SWARM_SHIELD_WINDOW_MINUTES: int = 5
     SWARM_SHIELD_THRESHOLD: int = 3
     ENABLE_MERCHANT_RECOVERY: bool = True
+
+    # Voice Call AI Teammate
+    ENABLE_VOICE_CALL: bool = True
+    VOICE_CALL_MODE: str = "simulator"  # simulator, freeswitch, asterisk, livekit
+    VOICE_CALL_SIP_GATEWAY_URL: str = "http://localhost:5060"
+    VOICE_CALL_WS_URL: str = "ws://localhost:8000/api/v1/calls/ws"
+    VOICE_CALL_DEFAULT_LANGUAGE: str = "hi"
+    VOICE_CALL_RECORDING_CONSENT_REQUIRED: bool = True
+    VOICE_CALL_MAX_DURATION_SECONDS: int = 300
+    VOICE_FEEDBACK_ENABLED: bool = True
+    VOICE_AGENT_NAME: str = "Paytm AwaazLedger Voice Teammate"
     DEMO_MODE: bool = True
 
 

@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # FreeSWITCH PBX Gateway for SIP/PSTN Telephony
+  freeswitch:
+    image: signalwire/freeswitch:latest
+    container_name: awaazledger-freeswitch
+    environment:
+      - SOUNDS_EN_US_CALLIE_8000=true
+    ports:
+      - "5060:5060/tcp"
+      - "5060:5060/udp"
+      - "5080:5080/tcp"
+      - "5080:5080/udp"
+      - "8021:8021/tcp"
+      - "16384-16484:16384-16484/udp"
+    restart: unless-stopped
+    networks:
+      - awaazledger-net
+
+  # AudioSocket / WebSocket bridge to AwaazLedger FastAPI Voice Agent
+  sip-voice-bridge:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: awaazledger-voice-bridge
+    command: python -m app.services.voice_agent_service
+    environment:
+      - DATABASE_URL=sqlite:///./data/awaazledger.db
+      - ENABLE_VOICE_CALL=true
+      - VOICE_CALL_MODE=freeswitch
+      - VOICE_CALL_SIP_GATEWAY_URL=http://freeswitch:5060
+      - PUBLIC_BACKEND_URL=http://backend:8000
+    depends_on:
+      - freeswitch
+    networks:
+      - awaazledger-net
+
+networks:
+  awaazledger-net:
+    driver: bridge
