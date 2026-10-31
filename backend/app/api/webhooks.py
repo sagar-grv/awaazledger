@@ -18,6 +18,9 @@ from app.services.channel_message_service import (
 from app.agent.state_machine import AgentOrchestrator
 from app.services.whatsapp_reply_service import WhatsAppReplyService
 from app.services.feedback_service import FeedbackService, hash_phone
+from app.services.learning_service import AgentLearningService
+from app.services.sarvam_tts import generate_voice_reply
+from app.services.tracker_image_service import generate_tracker_image
 from app.api.disputes import _build_tracker_response
 
 logger = logging.getLogger(__name__)
@@ -72,7 +75,8 @@ def process_whatsapp_payload(raw_payload: Dict[str, Any], db: Session) -> Dict[s
     feedback_svc = FeedbackService(db)
 
     # 2. Check for Pending Feedback Response
-    if msg_type == "text" and text and feedback_svc.has_pending_feedback(phone):
+    is_feedback_rating = feedback_svc.parse_whatsapp_feedback(text) is not None
+    if msg_type == "text" and text and (feedback_svc.has_pending_feedback(phone) or is_feedback_rating):
         consumed_fb = feedback_svc.consume_feedback(phone, text)
         if consumed_fb:
             rating = consumed_fb.rating
@@ -88,6 +92,15 @@ def process_whatsapp_payload(raw_payload: Dict[str, Any], db: Session) -> Dict[s
                 thank_you = "Shukriya! Aapka feedback record ho gaya hai."
 
             adapter.send_text(phone, thank_you)
+
+            # Record feedback to self-improvement learning engine
+            try:
+                disp_obj = db.query(Dispute).filter(Dispute.id == consumed_fb.dispute_id).first() if consumed_fb.dispute_id else None
+                learning_svc = AgentLearningService(db)
+                learning_svc.record_feedback_learning(disp_obj, rating, raw_text=text, phone=phone)
+            except Exception as e:
+                logger.warning(f"Failed to record feedback learning: {e}")
+
             return {
                 "status": "FEEDBACK_PROCESSED",
                 "phone": phone,
@@ -147,6 +160,15 @@ def process_whatsapp_payload(raw_payload: Dict[str, Any], db: Session) -> Dict[s
     # 4. If missing UTR or unknown phone, reply prompt
     if ingest_res.get("needs_more_info") or not dispute_id:
         adapter.send_text(phone, agent_message)
+        if msg_type == "voice":
+            try:
+                prompt_lang = ingest_res.get("entities", {}).language if hasattr(ingest_res.get("entities"), "language") else "hi"
+                voice_fn = generate_voice_reply(agent_message, "PROMPT", language=prompt_lang)
+                if voice_fn:
+                    adapter.send_voice(phone, voice_fn)
+            except Exception as e:
+                logger.warning(f"Voice prompt generation error: {e}")
+
         return {
             "status": "NEEDS_INFO",
             "phone": phone,
@@ -175,6 +197,31 @@ def process_whatsapp_payload(raw_payload: Dict[str, Any], db: Session) -> Dict[s
 
     # 8. Send Formatted WhatsApp Result Message (+ optional TTS/image)
     reply_svc.send_agent_result(phone, disp, tracker, language=disp.language)
+
+    # Ensure voice note reply if user sent a voice note
+    if msg_type == "voice":
+        try:
+            voice_path = generate_voice_reply(disp.explanation_user or "Dispute verified and resolved.", disp.dispute_code, language=disp.language)
+            if voice_path:
+                adapter.send_voice(phone, voice_path)
+        except Exception as e:
+            logger.warning(f"Voice note reply dispatch failed: {e}")
+
+    # Ensure status card image if user uploaded screenshot
+    if msg_type == "image":
+        try:
+            img_path = generate_tracker_image(disp.dispute_code, tracker)
+            if img_path:
+                adapter.send_image(phone, img_path, caption=f"Dispute Status Card: {disp.dispute_code}")
+        except Exception as e:
+            logger.warning(f"Status card image dispatch failed: {e}")
+
+    # Record autonomous settlement in continuous learning engine
+    try:
+        learning_svc = AgentLearningService(db)
+        learning_svc.record_autonomous_resolution(disp, modality=msg_type.upper())
+    except Exception as e:
+        logger.warning(f"Failed to record autonomous resolution learning: {e}")
 
     # 9. Register & Send Feedback Prompt
     if getattr(settings, "FEEDBACK_ENABLED", True):

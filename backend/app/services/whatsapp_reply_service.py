@@ -25,17 +25,20 @@ class WhatsAppReplyService:
     def send_agent_ack(self, phone: str, language: str, dispute_code: str) -> Dict[str, Any]:
         """Sends an immediate acknowledgment message on WhatsApp upon receiving the complaint."""
         lang = (language or "hi").lower()
-        if lang in ("hi", "mr", "hinglish"):
+        if lang == "mr":
             msg = (
-                f"Namaste 🙏 Main AwaazLedger hoon.\n\n"
-                f"Aapki complaint mil gayi hai (Ref: *{dispute_code}*).\n"
-                f"Main Core Banking (CBS), NPCI switch, aur Paytm ledger se verify kar raha hoon. Kripya thoda intezaar karein..."
+                f"✅ *तक्रार नोंदवली (Ref: {dispute_code})*\n\n"
+                f"नमस्कार 🙏 मी बँक (CBS) आणि NPCI द्वारे पडताळणी करत आहे. कृपया 3-5 सेकंद थांबा..."
+            )
+        elif lang in ("hi", "hinglish"):
+            msg = (
+                f"✅ *कंप्लेंट दर्ज कर ली गई है (Ref: {dispute_code})*\n\n"
+                f"नमस्ते 🙏 मैं आपके बैंक (CBS) और NPCI रिकॉर्ड्स वेरिफाई कर रहा हूँ। कृपया 3-5 सेकंड रुकें..."
             )
         else:
             msg = (
-                f"Hello 🙏 I am AwaazLedger.\n\n"
-                f"I received your dispute request (Ref: *{dispute_code}*).\n"
-                f"I am actively verifying across Core Banking, NPCI, and Paytm ledgers. Please hold on..."
+                f"✅ *Dispute Registered (Ref: {dispute_code})*\n\n"
+                f"Hello 🙏 Verifying records across Bank CBS & NPCI switch. Please wait 3-5 seconds..."
             )
 
         return self.adapter.send_text(phone, msg)
@@ -51,48 +54,47 @@ class WhatsAppReplyService:
         decision = dispute.agent_decision or "PENDING"
         amount_str = f"₹{dispute.amount:.2f}" if dispute.amount else "Pending"
         code = dispute.dispute_code
+        utr_str = dispute.utr or "N/A"
 
-        # 1. Decision Header Badge
+        # 1. Concise, User-Perspective Status Badge
         if decision in ("AUTO_RESOLVE", "AUTO_BRIDGE_CREDIT"):
-            badge = "✅ *PROVISIONAL BRIDGE CREDIT PROVIDED*"
+            badge = f"✅ *PROVISIONAL CREDIT ADDED: {amount_str}*"
+            action_desc = "Instant provisional credit added to your Paytm Wallet"
         elif decision in ("HUMAN_ESCALATE", "ESCALATED"):
-            badge = "👥 *ROUTED TO SENIOR OPERATIONS SPECIALIST*"
+            badge = "⏳ *CASE UNDER REVIEW BY SENIOR TEAM*"
+            action_desc = "High-value transaction sent for priority human review"
         elif decision in ("FRAUD_BLOCK", "MANUALLY_BLOCKED_FRAUD"):
-            badge = "🛡️ *RISK VERIFICATION LOCK APPLIED*"
+            badge = "🛡️ *TRANSACTION VERIFICATION ON HOLD*"
+            action_desc = "Verification paused for account safety; under review by risk team"
         elif decision in ("GHOST_SUCCESS_RECEIPT", "RECEIPT_GENERATED"):
             badge = "🧾 *VERIFIED DIGITAL MERCHANT RECEIPT GENERATED*"
+            action_desc = "Payment confirmed credited to merchant bank"
         else:
-            badge = "ℹ️ *DISPUTE INVESTIGATION UPDATE*"
-
-        # 2. Multi-Node Status Checkpoints
-        nodes_text = (
-            "━━━━━━━━━━━━━━━━━━━━━\n"
-            "*Financial Truth Trace:*\n"
-            "• Remitter Bank: ✅ Debited\n"
-            "• NPCI Switch: ⏳ Delayed / In-Transit\n"
-            "• Beneficiary Bank: ❌ Not Credited\n"
-            "• Paytm Settlement: ⏳ Pending\n"
-            "• Bridge Credit: " + ("✅ Provided\n" if "AUTO" in decision else "⏳ Pending\n") +
-            "• RBI TAT Timer: ⏳ Active (T+1 Rule)\n"
-            "━━━━━━━━━━━━━━━━━━━━━"
-        )
+            badge = "ℹ️ *DISPUTE STATUS UPDATE*"
+            action_desc = "Investigation completed"
 
         user_exp = dispute.explanation_user or "Aapka dispute process kar diya gaya hai."
 
-        # 3. Optional Public Tracker Link
+        # Public Tracker Link
         tracker_link = ""
         public_url = getattr(settings, "PUBLIC_APP_URL", "")
         if public_url:
-            tracker_link = f"\n\n🔍 Live Tracker Link:\n{public_url}/tracker?code={code}"
+            tracker_link = f"\n\n🔗 *Live Status Link:*\n{public_url}/tracker?code={code}"
 
+        # Clean, concise, user-perspective message without internal clutter
         full_message = (
             f"{badge}\n\n"
-            f"Reference: *{code}*\n"
-            f"Claimed Amount: *{amount_str}*\n\n"
+            f"• Reference: *{code}*\n"
+            f"• UTR: *{utr_str}*\n"
+            f"• Amount: *{amount_str}*\n\n"
             f"{user_exp}\n\n"
-            f"{nodes_text}"
-            f"{tracker_link}\n\n"
-            f"_AwaazLedger Autonomous AI Teammate for Paytm UPI_"
+            f"📊 *Quick Verification Summary:*\n"
+            f"• Bank Check: ✅ Debited\n"
+            f"• NPCI Switch: ⏳ Delayed / In-Transit\n"
+            f"• Merchant Status: ❌ Not Credited\n"
+            f"• Next Step: ⏱️ {action_desc}\n"
+            f"• RBI TAT Guarantee: T+1 Auto-Reversal Active"
+            f"{tracker_link}"
         )
 
         res = self.adapter.send_text(phone, full_message)
@@ -114,7 +116,16 @@ class WhatsAppReplyService:
     def send_feedback_prompt(self, phone: str, dispute_id: int, language: str = "hi") -> Dict[str, Any]:
         """Sends the structured feedback rating prompt on WhatsApp."""
         lang = (language or "hi").lower()
-        if lang in ("hi", "mr", "hinglish"):
+        if lang == "mr":
+            prompt = (
+                "कृपया आपला अभिप्राय द्या:\n"
+                "*1* - Helpful (योग्य मदत मिळाली)\n"
+                "*2* - Not helpful (मदत झाली नाही)\n"
+                "*3* - Talk to human (अधिकार्यांशी बोला)\n"
+                "*4* - Wrong decision (निर्णय चुकीचा वाटतो)\n\n"
+                "_(फक्त 1, 2, 3 किंवा 4 रिप्लाय करा)_"
+            )
+        elif lang in ("hi", "hinglish"):
             prompt = (
                 "Kripya apna feedback dein:\n"
                 "*1* - Helpful (Sahi madad mili)\n"

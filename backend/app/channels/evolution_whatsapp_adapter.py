@@ -21,9 +21,9 @@ class EvolutionWhatsAppAdapter(ChannelAdapter):
         api_key: Optional[str] = None,
         instance_name: Optional[str] = None,
     ):
-        self.base_url = base_url or getattr(settings, "EVOLUTION_API_URL", "http://localhost:8080")
-        self.api_key = api_key or getattr(settings, "EVOLUTION_API_KEY", "")
-        self.instance_name = instance_name or getattr(settings, "EVOLUTION_INSTANCE_NAME", "paytm-awaazledger")
+        self.base_url = base_url if base_url is not None else getattr(settings, "EVOLUTION_API_URL", "http://localhost:8080")
+        self.api_key = api_key if api_key is not None else getattr(settings, "EVOLUTION_API_KEY", "")
+        self.instance_name = instance_name if instance_name is not None else getattr(settings, "EVOLUTION_INSTANCE_NAME", "paytm-awaazledger")
 
     def _clean_recipient(self, recipient: str) -> str:
         clean = re.sub(r"[^\d]", "", str(recipient or ""))

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { MetricsDashboard } from '../lib/types';
-import { fetchMetricsDashboard } from '../lib/api';
+import { fetchMetricsDashboard, fetchLearningMetrics } from '../lib/api';
+import { ContinuousLearningPanel } from '../components/ContinuousLearningPanel';
 import {
   BarChart3,
   TrendingUp,
@@ -423,6 +424,8 @@ export const Metrics: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Autonomous Continuous Learning & Self-Improvement Telemetry */}
+      <ContinuousLearningPanel />
     </div>
   );
 };

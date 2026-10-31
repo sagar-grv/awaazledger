@@ -40,3 +40,11 @@ def get_metrics_dashboard(db: Session = Depends(get_db)):
     """Returns combined analytics payload for live fintech monitoring dashboard."""
     service = MetricsService(db)
     return service.get_dashboard()
+
+
+@router.get("/learning")
+def get_agent_learning_metrics(db: Session = Depends(get_db)):
+    """Returns autonomous self-healing, continuous learning cycles, and adaptation telemetry."""
+    from app.services.learning_service import AgentLearningService
+    service = AgentLearningService(db)
+    return service.get_learning_telemetry()

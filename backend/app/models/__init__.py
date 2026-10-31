@@ -8,6 +8,7 @@ from app.models.bridge_credit import BridgeCredit
 from app.models.rbi_claim import RbiClaim
 from app.models.escalation import Escalation
 from app.models.consent import Consent
+from app.models.learning import AgentLearningEntry
 
 __all__ = [
     "User",
@@ -20,4 +21,5 @@ __all__ = [
     "RbiClaim",
     "Escalation",
     "Consent",
+    "AgentLearningEntry",
 ]
