@@ -3,7 +3,7 @@
 **Paytm Build for India AI Hackathon | Track 3: Autonomous AI Teammates**
 
 [![Build & Test Status](https://img.shields.io/badge/Unit%20Tests-143%2F143%20Passing-brightgreen)](backend/tests)
-[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deploy%20Ready-black?logo=vercel)](frontend/vercel.json)
+[![Live Demo](https://img.shields.io/badge/Vercel-Live%20Demo-success?logo=vercel)](https://frontend-delta-ruby-46.vercel.app)
 [![Python Version](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
 [![Frontend](https://img.shields.io/badge/Frontend-React%2018%20%2B%20TypeScript%20%2B%20Vite-61dafb)](frontend)
 [![Compliance](https://img.shields.io/badge/RBI%20Compliance-DPSS%20No.629%20TAT%20T%2B1-orange)](docs/decision-policy.md)
