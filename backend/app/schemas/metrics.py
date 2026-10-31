@@ -1,4 +1,4 @@
-"""Fintech operational metrics, SLA tracking, and impact schemas."""
+"""Fintech operational metrics, SLA tracking, feedback satisfaction, and impact schemas."""
 
 from typing import List, Optional
 from pydantic import BaseModel, Field
@@ -27,6 +27,15 @@ class MetricsSummaryResponse(BaseModel):
     avg_resolution_seconds: float
     rbi_claims_filed_count: int = 0
     rbi_claims_saved_inr: float
+
+    # Customer Feedback & CSAT Metrics
+    feedback_count: int = 0
+    helpful_count: int = 0
+    not_helpful_count: int = 0
+    human_request_count: int = 0
+    wrong_decision_count: int = 0
+    customer_satisfaction_pct: float = 100.0
+    pending_feedback_count: int = 0
 
     # Impact Projections (Explicitly labeled)
     projected_annual_l1_cost_savings_inr: float = 0.0

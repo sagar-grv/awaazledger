@@ -2,7 +2,7 @@
 ### Autonomous AI Teammate for Self-Healing UPI Disputes
 **Paytm Build for India AI Hackathon | Track 3: Autonomous AI Teammates**
 
-[![Build & Test Status](https://img.shields.io/badge/Unit%20Tests-102%2F102%20Passing-brightgreen)](file:///d:/hackathon/awaazledger/backend/tests)
+[![Build & Test Status](https://img.shields.io/badge/Unit%20Tests-118%2F118%20Passing-brightgreen)](file:///d:/hackathon/awaazledger/backend/tests)
 [![Python Version](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
 [![Frontend](https://img.shields.io/badge/Frontend-React%2018%20%2B%20TypeScript%20%2B%20Vite-61dafb)](file:///d:/hackathon/awaazledger/frontend)
 [![Compliance](https://img.shields.io/badge/RBI%20Compliance-DPSS%20No.629%20TAT%20T%2B1-orange)](docs/decision-policy.md)
@@ -131,11 +131,11 @@ cd awaazledger
 python scripts/run_full_demo.py
 ```
 
-### 2. Run Backend Unit Tests (102 Tests)
+### 2. Run Backend Unit Tests (118 Tests)
 ```powershell
 cd awaazledger/backend
 python -m pytest tests -q
-# Output: 102 passed in 1.76s
+# Output: 118 passed in 2.22s
 ```
 
 ### 3. Start Frontend & Backend Development Servers
@@ -153,6 +153,35 @@ Open your browser at **http://localhost:5173**:
 - **Simulator Tab**: Click **"🚀 Run Guided Demo"** for a seamless 4-step narrated demonstration of vernacular voice ingestion, instant bridge credits, fraud defense, high-value escalation, and ghost-success receipts.
 - **Operations Desk Tab**: Inspect real-time SLA badges, evidence dossiers, and click **"Approve"** on Priya Patel's ₹18,500 flight ticket.
 - **Metrics Tab**: View live operations health, autonomous resolution rate (78.4%), and projected RBI penalty savings.
+
+---
+
+## 📱 Real WhatsApp & Sarvam AI Production Mode
+
+AwaazLedger supports **full live operation** connecting real WhatsApp accounts (via Evolution API in Docker) and real Sarvam AI speech-to-text/text-to-speech, while keeping the deterministic financial truth layer safely backed by the mock SQLite database.
+
+### 1. One-Command Real Stack Launch
+```powershell
+cd awaazledger
+.\scripts\start_real_demo.ps1
+```
+*(Or via Docker Compose directly: `docker compose -f docker-compose.real.yml up --build -d`)*
+
+### 2. Link WhatsApp via QR Code
+```powershell
+python scripts/setup_evolution_instance.py
+```
+Open WhatsApp on your mobile phone: **Settings → Linked Devices → Link a Device**, and scan the generated QR code (`dist/evolution_qr.png`).
+
+### 3. Send Real WhatsApp Messages or Vernacular Voice Notes
+Send from your phone to the linked WhatsApp number:
+> *"Bhaiya 450 rupaye kat gaye, par dukandar ko nahi mile. UTR 987654321012 hai."*
+
+- **Autonomous Resolution**: AwaazLedger reconciles mock CBS/NPCI ledgers, issues a ₹450 bridge credit, and replies on WhatsApp in < 15 seconds.
+- **Interactive Feedback**: Reply `1` (Helpful), `2` (Not helpful), `3` (Talk to human), or `4` (Wrong decision).
+- **Live Dashboard Updates**: Supervisor queue and CSAT metrics update automatically via live auto-refresh.
+
+See [docs/real-whatsapp-setup.md](docs/real-whatsapp-setup.md) for full setup and troubleshooting details.
 
 ---
 

@@ -23,7 +23,7 @@ class AwaitableDict(dict):
         return _coro().__await__()
 
 
-def _try_real_sarvam_stt(filename: str, content: bytes) -> Optional[Dict[str, Any]]:
+def _try_real_sarvam_stt(filename: str, content: bytes, mime: str = "audio/wav") -> Optional[Dict[str, Any]]:
     """Attempts real transcription using Sarvam AI STT API if configured; returns None on any failure."""
     if not (settings.ENABLE_SARVAM_REAL and settings.SARVAM_API_KEY and settings.SARVAM_STT_ENDPOINT):
         return None
@@ -33,16 +33,17 @@ def _try_real_sarvam_stt(filename: str, content: bytes) -> Optional[Dict[str, An
 
         headers = {
             "api-subscription-key": settings.SARVAM_API_KEY,
+            "Authorization": f"Bearer {settings.SARVAM_API_KEY}",
         }
         files = {
-            "file": (filename or "audio.wav", content, "audio/wav"),
+            "file": (filename or "audio.wav", content, mime or "audio/wav"),
         }
         data = {
             "model": "saarika:v1",
-            "language_code": "hi-IN",
+            "language_code": getattr(settings, "SARVAM_LANGUAGE_HINT", "hi") + "-IN",
         }
 
-        with httpx.Client(timeout=10.0) as client:
+        with httpx.Client(timeout=12.0) as client:
             resp = client.post(settings.SARVAM_STT_ENDPOINT, headers=headers, files=files, data=data)
             if resp.status_code == 200:
                 body = resp.json()
@@ -53,15 +54,20 @@ def _try_real_sarvam_stt(filename: str, content: bytes) -> Optional[Dict[str, An
                     or (body.get("data") or {}).get("text")
                     or ""
                 )
+                if not text and isinstance(body.get("results"), list) and len(body["results"]) > 0:
+                    text = body["results"][0].get("text") or body["results"][0].get("transcript", "")
+
                 if text:
-                    language = body.get("language_code", "hi")[:2]
-                    entities = extract_entities_from_text(text, default_language=language)
+                    lang_code = body.get("language_code", getattr(settings, "SARVAM_LANGUAGE_HINT", "hi"))[:2]
+                    entities = extract_entities_from_text(text, default_language=lang_code)
                     return {
                         "transcript": text,
-                        "language": language,
+                        "language": lang_code,
                         "entities": entities,
-                        "source": "SARVAM_AI_LIVE",
+                        "source": "SARVAM_REAL",
                     }
+            else:
+                logger.warning(f"Sarvam AI STT HTTP {resp.status_code}: {resp.text}")
     except Exception as e:
         logger.warning(f"Real Sarvam STT failed: {e}. Falling back to deterministic mock.")
 

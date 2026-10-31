@@ -15,6 +15,7 @@ Welcome to the comprehensive documentation library for **AwaazLedger**, an Auton
 | [**Demo Video Script**](demo-video-script.md) | 2-minute timed scene-by-scene demo script with exact audio voiceovers and UI highlights. | Video Producers & Presenters |
 | [**Judge Q&A Guide**](judge-qa.md) | 25+ detailed questions & answers covering financial risk, compliance, latency, and AI safety. | Hackathon Presenters |
 | [**Submission Checklist**](submission-checklist.md) | Step-by-step readiness checklist covering code quality, scenarios, tests, and demo verification. | QA & Hackathon Team |
+| [**Real WhatsApp Setup**](real-whatsapp-setup.md) | One-command Docker Compose, Evolution API QR pairing, and live Sarvam AI mode guide. | Operators & Judges |
 | [**Demo Execution Scripts**](demo-script.md) | CLI commands and guided walkthrough instructions for terminal and frontend demonstrations. | Developers & Evaluators |
 
 ---

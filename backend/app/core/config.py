@@ -17,18 +17,44 @@ class Settings(BaseSettings):
     DATABASE_URL: str = f"sqlite:///{DEFAULT_DB_PATH}"
     SECRET_KEY: str = "dev_secret_key_hackathon_only"
 
-    # AI & Service integrations
-    SARVAM_API_KEY: Optional[str] = None
+    # WhatsApp Channel configuration
+    WHATSAPP_MODE: str = "simulator"  # simulator, evolution, meta_cloud
+    ENABLE_EVOLUTION_LIVE: bool = False
+    EVOLUTION_API_URL: str = "http://localhost:8080"
+    EVOLUTION_API_KEY: Optional[str] = None
+    EVOLUTION_INSTANCE_NAME: str = "paytm-awaazledger"
+    EVOLUTION_WEBHOOK_URL: Optional[str] = None
+    EVOLUTION_WEBHOOK_EVENTS: str = "messages.upsert"
+    EVOLUTION_ENABLE_BASE64_MEDIA: bool = True
+
+    # Sarvam AI STT & TTS
     ENABLE_SARVAM_REAL: bool = False
+    SARVAM_API_KEY: Optional[str] = None
     SARVAM_STT_ENDPOINT: Optional[str] = None
     SARVAM_TTS_ENDPOINT: Optional[str] = None
+    SARVAM_LANGUAGE_HINT: str = "hi"
 
+    # OCR configuration
     ENABLE_OCR_REAL: bool = False
+    OCR_ENGINE: str = "tesseract"  # tesseract, paddle, google_vision, mock
+    GOOGLE_VISION_API_KEY: Optional[str] = None
 
-    ENABLE_EVOLUTION_LIVE: bool = False
-    EVOLUTION_API_KEY: Optional[str] = None
-    EVOLUTION_API_URL: str = "http://localhost:8080"
-    EVOLUTION_INSTANCE_NAME: str = "paytm-awaazledger"
+    # Voice Reply & Visual Tracker
+    ENABLE_WHATSAPP_VOICE_REPLY: bool = False
+    ENABLE_TRACKER_IMAGE: bool = False
+    PUBLIC_APP_URL: Optional[str] = None
+    PUBLIC_BACKEND_URL: Optional[str] = None
+
+    # Feedback Engine
+    FEEDBACK_ENABLED: bool = True
+    FEEDBACK_EXPIRY_MINUTES: int = 30
+
+    # Auto Refresh Cadence
+    DASHBOARD_AUTO_REFRESH_SECONDS: int = 5
+    METRICS_AUTO_REFRESH_SECONDS: int = 10
+
+    # Demo phone mapping override
+    DEMO_WHATSAPP_NUMBER: Optional[str] = None
 
     # Risk & Policy Engine thresholds
     AUTO_CREDIT_CEILING: float = 2000.0

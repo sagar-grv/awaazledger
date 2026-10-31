@@ -19,22 +19,33 @@ import {
 export const Metrics: React.FC = () => {
   const [dashboard, setDashboard] = useState<MetricsDashboard | null>(null);
   const [loading, setLoading] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [lastRefreshed, setLastRefreshed] = useState<string>(new Date().toLocaleTimeString());
 
-  const loadData = async () => {
-    setLoading(true);
+  const loadData = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const data = await fetchMetricsDashboard();
       setDashboard(data);
+      setLastRefreshed(new Date().toLocaleTimeString());
     } catch (e) {
       console.error('Failed to load metrics dashboard', e);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const interval = setInterval(() => {
+      loadData(true);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [autoRefresh]);
 
   const summary = dashboard?.summary;
   const distributions = dashboard?.distributions;
@@ -53,7 +64,23 @@ export const Metrics: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setAutoRefresh(!autoRefresh)}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                autoRefresh
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                  : 'bg-slate-50 text-slate-500 border-slate-200'
+              }`}
+              title="Toggle automatic telemetry refreshing"
+            >
+              <span className={`w-2 h-2 rounded-full ${autoRefresh ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`}></span>
+              {autoRefresh ? 'Live Updates (10s)' : 'Paused'}
+            </button>
+            <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">{lastRefreshed}</span>
+          </div>
+
           {health && (
             <div
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold ${
@@ -76,7 +103,7 @@ export const Metrics: React.FC = () => {
           )}
 
           <button
-            onClick={loadData}
+            onClick={() => loadData(false)}
             disabled={loading}
             className="flex items-center gap-1.5 px-3 py-2 bg-paytm-darkNavy text-white hover:bg-slate-800 rounded-xl text-xs font-semibold shadow-sm transition-all"
           >
@@ -202,6 +229,53 @@ export const Metrics: React.FC = () => {
           <p className="text-[11px] text-slate-500 mt-2">
             {summary?.fraud_blocked_count || 0} fraud blocks executed; {health?.sla_breached_escalations || 0} breaches.
           </p>
+        </div>
+      </div>
+
+      {/* Real WhatsApp Customer Feedback & CSAT Grid */}
+      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles className="text-paytm-cyan" size={20} />
+            <h2 className="text-base font-bold text-slate-900">Real WhatsApp Customer Feedback & CSAT Telemetry</h2>
+          </div>
+          <span className="text-xs px-2.5 py-1 bg-blue-50 text-blue-700 font-semibold rounded-lg border border-blue-200">
+            Active Feedback Loop
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="p-4 bg-emerald-50/60 border border-emerald-200 rounded-xl">
+            <p className="text-[11px] font-semibold text-emerald-800 uppercase tracking-wider">Customer Satisfaction</p>
+            <p className="text-2xl font-black text-emerald-900 mt-1">
+              {summary?.customer_satisfaction_pct != null ? `${summary.customer_satisfaction_pct.toFixed(1)}%` : '100%'}
+            </p>
+            <p className="text-[10px] text-emerald-700 mt-1">Based on WhatsApp 1-4 user ratings</p>
+          </div>
+
+          <div className="p-4 bg-blue-50/60 border border-blue-200 rounded-xl">
+            <p className="text-[11px] font-semibold text-blue-800 uppercase tracking-wider">Feedback Responses</p>
+            <p className="text-2xl font-black text-blue-900 mt-1">
+              {summary?.feedback_count ?? 0}
+            </p>
+            <p className="text-[10px] text-blue-700 mt-1">{summary?.helpful_count ?? 0} marked helpful</p>
+          </div>
+
+          <div className="p-4 bg-amber-50/60 border border-amber-200 rounded-xl">
+            <p className="text-[11px] font-semibold text-amber-800 uppercase tracking-wider">Human Specialist Requests</p>
+            <p className="text-2xl font-black text-amber-900 mt-1">
+              {summary?.human_request_count ?? 0}
+            </p>
+            <p className="text-[10px] text-amber-700 mt-1">Auto-escalated to supervisor</p>
+          </div>
+
+          <div className="p-4 bg-rose-50/60 border border-rose-200 rounded-xl">
+            <p className="text-[11px] font-semibold text-rose-800 uppercase tracking-wider">Wrong Decision Flags</p>
+            <p className="text-2xl font-black text-rose-900 mt-1">
+              {summary?.wrong_decision_count ?? 0}
+            </p>
+            <p className="text-[10px] text-rose-700 mt-1">Sent to quality review queue</p>
+          </div>
         </div>
       </div>
 

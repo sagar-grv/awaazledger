@@ -12,6 +12,8 @@ from app.models.escalation import Escalation
 from app.models.bridge_credit import BridgeCredit
 from app.models.rbi_claim import RbiClaim
 from app.models.transaction import Transaction
+from app.models.feedback import Feedback
+from app.services.feedback_service import FeedbackService
 from app.schemas.metrics import (
     MetricBucket,
     MetricsSummaryResponse,
@@ -147,6 +149,9 @@ class MetricsService:
         tat_reduction = round(self.benchmarks["legacy_resolution_tat_hours"] - (self.benchmarks["agent_handling_tat_minutes"] / 60.0), 1)
         prevented_penalties = round(rbi_claims_count * self.benchmarks["rbi_daily_penalty_per_dispute_inr"] * 5, 2)
 
+        fb_svc = FeedbackService(self.db)
+        fb_summary = fb_svc.get_summary()
+
         return MetricsSummaryResponse(
             total_disputes=total_disputes,
             processed_disputes=processed_disputes,
@@ -163,6 +168,13 @@ class MetricsService:
             avg_resolution_seconds=float(avg_resolution_seconds),
             rbi_claims_filed_count=rbi_claims_count,
             rbi_claims_saved_inr=float(rbi_saved_sum),
+            feedback_count=fb_summary.total_feedback,
+            helpful_count=fb_summary.helpful_count,
+            not_helpful_count=fb_summary.not_helpful_count,
+            human_request_count=fb_summary.human_request_count,
+            wrong_decision_count=fb_summary.wrong_decision_count,
+            customer_satisfaction_pct=fb_summary.customer_satisfaction_pct,
+            pending_feedback_count=fb_summary.pending_feedback_count,
             projected_annual_l1_cost_savings_inr=float(projected_savings),
             projected_tat_reduction_hours=float(tat_reduction),
             estimated_rbi_penalties_prevented_inr=float(prevented_penalties),

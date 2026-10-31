@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  evolution-api:
+    image: atendai/evolution-api:v2.1.1
+    container_name: awaazledger-evolution
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_URL=${EVOLUTION_SERVER_URL:-http://localhost:8080}
+      - AUTHENTICATION_API_KEY=${EVOLUTION_API_KEY:-awaazledger_secret_token_12345}
+      - DATABASE_ENABLED=false
+      - CACHE_REDIS_ENABLED=false
+      - WEBHOOK_GLOBAL_ENABLED=false
+    volumes:
+      - evolution_instances:/evolution/instances
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: awaazledger-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.real
+    environment:
+      - DATABASE_URL=sqlite:////app/data/awaazledger.db
+      - EVOLUTION_API_URL=http://evolution-api:8080
+      - EVOLUTION_WEBHOOK_URL=http://backend:8000/api/v1/webhooks/whatsapp
+    volumes:
+      - ./data:/app/data
+      - awaazledger_db:/app/data
+    depends_on:
+      - evolution-api
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: awaazledger-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000/api/v1
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  evolution_instances:
+  awaazledger_db:

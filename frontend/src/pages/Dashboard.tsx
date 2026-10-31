@@ -43,6 +43,8 @@ export const Dashboard: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
   const [filterTab, setFilterTab] = useState<'ALL' | 'OPEN' | 'IN_REVIEW' | 'CRITICAL' | 'RESOLVED'>('OPEN');
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [lastRefreshed, setLastRefreshed] = useState<string>(new Date().toLocaleTimeString());
   
   // Selected Dossier State
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
@@ -57,21 +59,30 @@ export const Dashboard: React.FC = () => {
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionInProgress, setActionInProgress] = useState(false);
 
-  const loadQueue = async () => {
-    setLoading(true);
+  const loadQueue = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const data = await fetchEscalationsList();
       setQueue(data);
+      setLastRefreshed(new Date().toLocaleTimeString());
     } catch (e) {
       console.error('Failed to load escalation queue', e);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
   useEffect(() => {
     loadQueue();
   }, []);
+
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const interval = setInterval(() => {
+      loadQueue(true);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [autoRefresh]);
 
   const openDossier = async (id: number) => {
     setSelectedTicketId(id);
@@ -223,8 +234,24 @@ export const Dashboard: React.FC = () => {
           </p>
         </div>
 
-        {/* Top Operational Stats */}
-        <div className="flex items-center gap-3">
+        {/* Top Operational Stats & Live Indicator */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setAutoRefresh(!autoRefresh)}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                autoRefresh
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                  : 'bg-slate-50 text-slate-500 border-slate-200'
+              }`}
+              title="Toggle automatic queue refreshing"
+            >
+              <span className={`w-2 h-2 rounded-full ${autoRefresh ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`}></span>
+              {autoRefresh ? 'Live Updates (5s)' : 'Paused'}
+            </button>
+            <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">{lastRefreshed}</span>
+          </div>
+
           <div className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-center">
             <p className="text-[10px] text-slate-500 font-semibold uppercase">Total In Queue</p>
             <p className="text-sm font-bold text-slate-800">{queue.total}</p>
@@ -238,7 +265,7 @@ export const Dashboard: React.FC = () => {
             <p className="text-sm font-bold text-rose-800">{queue.sla_breached_count}</p>
           </div>
           <button
-            onClick={loadQueue}
+            onClick={() => loadQueue(false)}
             disabled={loading}
             className="flex items-center gap-1.5 px-3 py-2 bg-paytm-darkNavy text-white hover:bg-slate-800 rounded-xl text-xs font-semibold shadow-sm transition-all"
           >
