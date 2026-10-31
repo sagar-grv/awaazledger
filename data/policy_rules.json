@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-10-30T00:00:00Z",
+  "regulatory_framework": "RBI DPSS.CO.PD No.629/02.01.014/2019-20 (Harmonisation of TAT)",
+  "thresholds": {
+    "auto_credit_ceiling": 2000.0,
+    "min_trust_score": 85,
+    "max_fraud_score": 30,
+    "duplicate_window_seconds": 120,
+    "rbi_tat_allowed_days": 1,
+    "rbi_delay_per_day": 100.0
+  },
+  "risk_tiers": {
+    "LOW": {
+      "max_amount": 2000.0,
+      "auto_credit_allowed": true
+    },
+    "MEDIUM": {
+      "max_amount": 5000.0,
+      "auto_credit_allowed": false,
+      "requires_cbs_confirmation": true
+    },
+    "HIGH": {
+      "max_amount": 50000.0,
+      "requires_human_approval": true
+    },
+    "CRITICAL": {
+      "action": "BLOCK_AND_ESCALATE"
+    }
+  }
+}

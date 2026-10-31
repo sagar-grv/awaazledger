@@ -1,0 +1,34 @@
+{
+  "voice_hindi_scn01": {
+    "language": "hi",
+    "transcript": "भैया मैंने 450 रुपये का payment किया, account से कट गया लेकिन दुकानदार को नहीं मिला। UTR 987654321012 है।"
+  },
+  "voice_hinglish_scn01": {
+    "language": "hi",
+    "transcript": "Bhaiya maine 450 rupees ka payment kiya, account se kat gaya lekin dukandar ko nahi mila. UTR 987654321012 hai."
+  },
+  "voice_marathi_scn02": {
+    "language": "mr",
+    "transcript": "मी 120 रुपये चे payment केले, account मधून कटले पण दुकानदाराला मिळाले नाही. UTR 112233445566 आहे."
+  },
+  "voice_highvalue_scn03": {
+    "language": "en",
+    "transcript": "I paid 18500 rupees for flight ticket but merchant did not receive. UTR 998877665544."
+  },
+  "voice_rbi_scn04": {
+    "language": "hi",
+    "transcript": "350 रुपये का payment तीन दिन से pending है। UTR 445566778899। Merchant को नहीं मिला।"
+  },
+  "voice_fraud_scn05": {
+    "language": "hi",
+    "transcript": "मेरा 1999 रुपये कटा है लेकिन UTR 000000000000 है।"
+  },
+  "voice_ghost_edge01": {
+    "language": "hi",
+    "transcript": "780 रुपये payment किया था but app में pending दिख रहा है। UTR 556677889900."
+  },
+  "voice_duplicate_edge02": {
+    "language": "hi",
+    "transcript": "दो बार 650 रुपये कट गए एक ही दुकान पर। UTR 778899001123."
+  }
+}

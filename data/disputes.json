@@ -1,0 +1,67 @@
+[
+  {
+    "id": 1,
+    "dispute_code": "DISP-20261030-001",
+    "user_id": 1,
+    "transaction_id": 1,
+    "amount": 450.0,
+    "channel": "WHATSAPP",
+    "status": "AUTO_CREDITED",
+    "agent_decision": "AUTO_RESOLVE",
+    "confidence_score": 0.98,
+    "description": "Dukaan par paise nahi mile par bank se kat gaye",
+    "created_at": "2026-10-30T10:15:00Z"
+  },
+  {
+    "id": 2,
+    "dispute_code": "DISP-20261030-002",
+    "user_id": 3,
+    "transaction_id": 3,
+    "amount": 18500.0,
+    "channel": "SIMULATOR",
+    "status": "ESCALATED",
+    "agent_decision": "HUMAN_ESCALATE",
+    "confidence_score": 0.91,
+    "description": "High value payment hung at electronics store",
+    "created_at": "2026-10-30T11:46:00Z"
+  },
+  {
+    "id": 3,
+    "dispute_code": "DISP-20261030-003",
+    "user_id": 4,
+    "transaction_id": 4,
+    "amount": 280.0,
+    "channel": "WHATSAPP",
+    "status": "RESOLVED",
+    "agent_decision": "AUTO_RESOLVE",
+    "confidence_score": 0.95,
+    "description": "Merchant says money not credited, but ledger shows credit completed",
+    "created_at": "2026-10-30T09:35:00Z"
+  },
+  {
+    "id": 4,
+    "dispute_code": "DISP-20261030-004",
+    "user_id": 5,
+    "transaction_id": 8,
+    "amount": 1999.0,
+    "channel": "WHATSAPP",
+    "status": "REJECTED",
+    "agent_decision": "FRAUD_BLOCK",
+    "confidence_score": 0.89,
+    "description": "Dispute on rapid multiple micro cash-outs",
+    "created_at": "2026-10-30T13:12:00Z"
+  },
+  {
+    "id": 5,
+    "dispute_code": "DISP-20261030-005",
+    "user_id": 1,
+    "transaction_id": 7,
+    "amount": 350.0,
+    "channel": "SIMULATOR",
+    "status": "RESOLVED",
+    "agent_decision": "AUTO_RESOLVE",
+    "confidence_score": 0.99,
+    "description": "3-day delayed auto-reversal, eligible for \u20b9200 RBI penalty compensation",
+    "created_at": "2026-10-30T14:00:00Z"
+  }
+]

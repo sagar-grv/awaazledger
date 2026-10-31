@@ -1,0 +1,150 @@
+[
+  {
+    "scenario_id": "SCN-01",
+    "name": "Valid pending small-ticket dispute",
+    "user_id": 1,
+    "user_name": "Rohit Verma",
+    "utr": "987654321012",
+    "amount": 450.0,
+    "claimed_amount": 450.0,
+    "channel": "WHATSAPP",
+    "expected_cbs_debited": true,
+    "expected_npcI_status": "U30",
+    "expected_beneficiary_credited": false,
+    "expected_signal": "AUTO_ELIGIBLE",
+    "expected_policy_inputs": {
+      "eligible_for_automatic_bridge_credit_signal": true,
+      "requires_human_review_signal": false,
+      "fraud_block_signal": false
+    }
+  },
+  {
+    "scenario_id": "SCN-02",
+    "name": "Screenshot OCR / valid small dispute",
+    "user_id": 2,
+    "user_name": "Priya Sharma",
+    "utr": "112233445566",
+    "amount": 120.0,
+    "claimed_amount": 120.0,
+    "channel": "WHATSAPP",
+    "expected_cbs_debited": true,
+    "expected_npcI_status": "BENEFICIARY_TIMEOUT",
+    "expected_beneficiary_credited": false,
+    "expected_signal": "AUTO_ELIGIBLE",
+    "expected_policy_inputs": {
+      "eligible_for_automatic_bridge_credit_signal": true,
+      "requires_human_review_signal": false,
+      "fraud_block_signal": false
+    }
+  },
+  {
+    "scenario_id": "SCN-03",
+    "name": "High-value human escalation",
+    "user_id": 2,
+    "user_name": "Priya Sharma",
+    "utr": "998877665544",
+    "amount": 18500.0,
+    "claimed_amount": 18500.0,
+    "channel": "SIMULATOR",
+    "expected_cbs_debited": true,
+    "expected_npcI_status": "U30",
+    "expected_beneficiary_credited": false,
+    "expected_signal": "HUMAN_REVIEW",
+    "expected_policy_inputs": {
+      "eligible_for_automatic_bridge_credit_signal": false,
+      "requires_human_review_signal": true,
+      "fraud_block_signal": false
+    }
+  },
+  {
+    "scenario_id": "SCN-04",
+    "name": "RBI TAT breach candidate",
+    "user_id": 1,
+    "user_name": "Rohit Verma",
+    "utr": "445566778899",
+    "amount": 350.0,
+    "claimed_amount": 350.0,
+    "channel": "SIMULATOR",
+    "expected_cbs_debited": true,
+    "expected_npcI_status": "U69",
+    "expected_beneficiary_credited": false,
+    "expected_signal": "RBI_COMPENSATION_SIGNAL",
+    "expected_policy_inputs": {
+      "rbi_tat_breach_candidate": true,
+      "rbi_compensation_signal": true
+    }
+  },
+  {
+    "scenario_id": "SCN-05",
+    "name": "Fraud invalid UTR / low trust",
+    "user_id": 3,
+    "user_name": "Vikram Singh",
+    "utr": "000000000000",
+    "amount": 1999.0,
+    "claimed_amount": 1999.0,
+    "channel": "WHATSAPP",
+    "expected_cbs_debited": false,
+    "expected_npcI_status": "INVALID_UTR",
+    "expected_beneficiary_credited": false,
+    "expected_signal": "FRAUD_SIGNAL",
+    "expected_policy_inputs": {
+      "invalid_utr": true,
+      "fraud_block_signal": true,
+      "eligible_for_automatic_bridge_credit_signal": false
+    }
+  },
+  {
+    "scenario_id": "SCN-EDGE-01",
+    "name": "Ghost success (Merchant already credited)",
+    "user_id": 5,
+    "user_name": "Sunita Devi",
+    "utr": "556677889900",
+    "amount": 780.0,
+    "claimed_amount": 780.0,
+    "channel": "WHATSAPP",
+    "expected_cbs_debited": true,
+    "expected_npcI_status": "SUCCESS",
+    "expected_beneficiary_credited": true,
+    "expected_signal": "RECEIPT_ONLY",
+    "expected_policy_inputs": {
+      "ghost_success": true,
+      "eligible_for_automatic_bridge_credit_signal": false
+    }
+  },
+  {
+    "scenario_id": "SCN-EDGE-02",
+    "name": "Duplicate debit pattern",
+    "user_id": 4,
+    "user_name": "Amit Kumar",
+    "utr": "778899001123",
+    "amount": 650.0,
+    "claimed_amount": 650.0,
+    "channel": "WHATSAPP",
+    "expected_cbs_debited": true,
+    "expected_npcI_status": "U30",
+    "expected_beneficiary_credited": false,
+    "expected_signal": "HUMAN_REVIEW",
+    "expected_policy_inputs": {
+      "duplicate_debit": true,
+      "requires_human_review_signal": true
+    }
+  },
+  {
+    "scenario_id": "SCN-EDGE-03",
+    "name": "Severe amount mismatch",
+    "user_id": 2,
+    "user_name": "Priya Sharma",
+    "utr": "334455667788",
+    "amount": 500.0,
+    "claimed_amount": 5000.0,
+    "channel": "SIMULATOR",
+    "expected_cbs_debited": true,
+    "expected_npcI_status": "U30",
+    "expected_beneficiary_credited": false,
+    "expected_signal": "FRAUD_OR_REVIEW",
+    "expected_policy_inputs": {
+      "amount_mismatch": true,
+      "fraud_block_signal": true
+    }
+  }
+]

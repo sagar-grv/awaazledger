@@ -1,0 +1,10 @@
+{
+  "legacy_resolution_tat_hours": 72.0,
+  "agent_handling_tat_minutes": 12.4,
+  "l1_agent_cost_per_ticket_inr": 30.0,
+  "rbi_daily_penalty_per_dispute_inr": 100.0,
+  "target_autonomous_resolution_rate_pct": 84.2,
+  "rbi_tat_sla_days": 1,
+  "currency": "INR",
+  "benchmarks_version": "v1.0"
+}

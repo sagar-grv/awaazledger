@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "name": "Rohit Verma",
+    "mobile_hash": "hash_rohit_9876543210",
+    "paytm_id": "rohit@paytm",
+    "language": "hi",
+    "trust_score": 95,
+    "kyc_status": "VERIFIED",
+    "device_id": "dev_rohit_android_01",
+    "blacklisted": false,
+    "previous_dispute_count": 0
+  },
+  {
+    "id": 2,
+    "name": "Priya Sharma",
+    "mobile_hash": "hash_priya_9812345678",
+    "paytm_id": "priya@paytm",
+    "language": "en",
+    "trust_score": 88,
+    "kyc_status": "VERIFIED",
+    "device_id": "dev_priya_ios_02",
+    "blacklisted": false,
+    "previous_dispute_count": 1
+  },
+  {
+    "id": 3,
+    "name": "Vikram Singh",
+    "mobile_hash": "hash_vikram_9945678901",
+    "paytm_id": "vikram@paytm",
+    "language": "hi",
+    "trust_score": 25,
+    "kyc_status": "PENDING",
+    "device_id": "dev_vikram_emulator_03",
+    "blacklisted": true,
+    "previous_dispute_count": 5
+  },
+  {
+    "id": 4,
+    "name": "Amit Kumar",
+    "mobile_hash": "hash_amit_9923456789",
+    "paytm_id": "amit@paytm",
+    "language": "mr",
+    "trust_score": 72,
+    "kyc_status": "VERIFIED",
+    "device_id": "dev_amit_android_04",
+    "blacklisted": false,
+    "previous_dispute_count": 2
+  },
+  {
+    "id": 5,
+    "name": "Sunita Devi",
+    "mobile_hash": "hash_sunita_9934567890",
+    "paytm_id": "sunita@paytm",
+    "language": "hi",
+    "trust_score": 91,
+    "kyc_status": "VERIFIED",
+    "device_id": "dev_sunita_android_05",
+    "blacklisted": false,
+    "previous_dispute_count": 0
+  }
+]
