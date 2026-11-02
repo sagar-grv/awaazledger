@@ -223,12 +223,12 @@ export const Dashboard: React.FC = () => {
   });
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 pb-12">
+    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 pb-12">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <ShieldAlert className="text-paytm-cyan" size={24} /> Human Supervisor Escalation Desk
+          <h1 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+            <ShieldAlert className="text-paytm-cyan shrink-0" size={22} /> Human Supervisor Escalation Desk
           </h1>
           <p className="text-xs text-slate-500 mt-1">
             Real-time human-in-the-loop review queue for high-value transactions, edge cases, and AML anomalies.
@@ -236,8 +236,8 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Top Operational Stats & Live Indicator */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3">
+          <div className="flex items-center justify-between sm:justify-start gap-2">
             <button
               onClick={() => setAutoRefresh(!autoRefresh)}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
@@ -250,25 +250,28 @@ export const Dashboard: React.FC = () => {
               <span className={`w-2 h-2 rounded-full ${autoRefresh ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`}></span>
               {autoRefresh ? 'Live Updates (5s)' : 'Paused'}
             </button>
-            <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">{lastRefreshed}</span>
+            <span className="text-[11px] text-slate-400 font-mono">{lastRefreshed}</span>
           </div>
 
-          <div className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-center">
-            <p className="text-[10px] text-slate-500 font-semibold uppercase">Total In Queue</p>
-            <p className="text-sm font-bold text-slate-800">{queue.total}</p>
+          <div className="grid grid-cols-3 gap-2 w-full sm:w-auto">
+            <div className="px-2.5 sm:px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-center">
+              <p className="text-[9px] sm:text-[10px] text-slate-500 font-semibold uppercase truncate">In Queue</p>
+              <p className="text-xs sm:text-sm font-bold text-slate-800">{queue.total}</p>
+            </div>
+            <div className="px-2.5 sm:px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-xl text-center">
+              <p className="text-[9px] sm:text-[10px] text-amber-700 font-semibold uppercase truncate">Open</p>
+              <p className="text-xs sm:text-sm font-bold text-amber-800">{queue.open_count}</p>
+            </div>
+            <div className="px-2.5 sm:px-3 py-1.5 bg-rose-50 border border-rose-200 rounded-xl text-center">
+              <p className="text-[9px] sm:text-[10px] text-rose-700 font-semibold uppercase truncate">Breached</p>
+              <p className="text-xs sm:text-sm font-bold text-rose-800">{queue.sla_breached_count}</p>
+            </div>
           </div>
-          <div className="px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-xl text-center">
-            <p className="text-[10px] text-amber-700 font-semibold uppercase">Open Pending</p>
-            <p className="text-sm font-bold text-amber-800">{queue.open_count}</p>
-          </div>
-          <div className="px-3 py-1.5 bg-rose-50 border border-rose-200 rounded-xl text-center">
-            <p className="text-[10px] text-rose-700 font-semibold uppercase">SLA Breached</p>
-            <p className="text-sm font-bold text-rose-800">{queue.sla_breached_count}</p>
-          </div>
+
           <button
             onClick={() => loadQueue(false)}
             disabled={loading}
-            className="flex items-center gap-1.5 px-3 py-2 bg-paytm-darkNavy text-white hover:bg-slate-800 rounded-xl text-xs font-semibold shadow-sm transition-all"
+            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-paytm-darkNavy text-white hover:bg-slate-800 rounded-xl text-xs font-semibold shadow-sm transition-all active:scale-95"
           >
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Refresh Queue
           </button>
@@ -280,28 +283,154 @@ export const Dashboard: React.FC = () => {
       <LiveCallConsole />
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+      <div className="flex items-center gap-1.5 sm:gap-2 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar touch-pan-x">
         {(['OPEN', 'CRITICAL', 'IN_REVIEW', 'RESOLVED', 'ALL'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setFilterTab(tab)}
-            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all whitespace-nowrap shrink-0 ${
               filterTab === tab
                 ? 'bg-paytm-cyan text-white shadow-sm'
                 : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
-            {tab === 'OPEN' && `Open Queue (${queue.open_count})`}
+            {tab === 'OPEN' && `Open (${queue.open_count})`}
             {tab === 'CRITICAL' && `High / Critical`}
             {tab === 'IN_REVIEW' && `In Review`}
-            {tab === 'RESOLVED' && `Completed / Actioned`}
-            {tab === 'ALL' && `All Tickets (${queue.total})`}
+            {tab === 'RESOLVED' && `Completed`}
+            {tab === 'ALL' && `All (${queue.total})`}
           </button>
         ))}
       </div>
 
-      {/* Main Escalation Table */}
-      <div className="overflow-x-auto bg-white border border-slate-200 rounded-2xl shadow-sm">
+      {/* Mobile Card View (screens < md) */}
+      <div className="md:hidden space-y-3">
+        {filteredItems.length === 0 ? (
+          <div className="p-8 text-center bg-white border border-slate-200 rounded-2xl text-slate-400">
+            <CheckCircle2 size={32} className="mx-auto mb-2 text-emerald-400 opacity-80" />
+            <p className="text-xs">No tickets matching current filter. AI Teammate is autonomously resolving incoming claims!</p>
+          </div>
+        ) : (
+          filteredItems.map((item) => {
+            const isActionable = item.status === 'OPEN' || item.status === 'IN_REVIEW';
+            return (
+              <div
+                key={item.id}
+                className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs space-y-3"
+              >
+                {/* Header: ID, Amount, Priority */}
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-mono font-bold text-slate-900 text-xs">#{item.id}</span>
+                      <span className="font-mono text-[10px] text-paytm-darkNavy font-semibold bg-sky-50 px-1.5 py-0.5 rounded">
+                        {item.dispute_code || `DISP-${item.dispute_id}`}
+                      </span>
+                    </div>
+                    <div className="text-xs font-semibold text-slate-800 mt-0.5">
+                      {item.user_name || 'Paytm User'} <span className="text-[10px] text-slate-400 font-mono">({item.user_phone || 'N/A'})</span>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <span className="font-extrabold text-slate-900 text-sm block">
+                      ₹{(item.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    </span>
+                    <span
+                      className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${
+                        item.priority === 'CRITICAL'
+                          ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                          : item.priority === 'HIGH'
+                          ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                          : item.priority === 'MEDIUM'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-slate-100 text-slate-700'
+                      }`}
+                    >
+                      {item.priority}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Reason & Anomaly */}
+                <div className="p-2.5 bg-slate-50 rounded-xl text-xs space-y-1">
+                  <p className="text-slate-800 font-medium leading-relaxed">{item.reason}</p>
+                  {item.resolution_note && (
+                    <p className="text-[11px] text-emerald-700 italic">
+                      Note: {item.resolution_note}
+                    </p>
+                  )}
+                </div>
+
+                {/* SLA and Status Meta */}
+                <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-100">
+                  <div>
+                    {item.is_sla_breached ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-rose-50 text-rose-700 border border-rose-200 rounded text-[10px] font-bold animate-pulse">
+                        <Clock size={10} /> SLA BREACHED
+                      </span>
+                    ) : item.hours_to_sla !== null && item.hours_to_sla !== undefined ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600">
+                        <Clock size={11} className="text-amber-500" />
+                        {item.hours_to_sla > 0 ? `${item.hours_to_sla}h left` : 'Due soon'}
+                      </span>
+                    ) : (
+                      <span className="text-slate-400 text-[10px]">T+1 SLA</span>
+                    )}
+                  </div>
+
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      item.status === 'APPROVED'
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : item.status === 'REJECTED'
+                        ? 'bg-rose-100 text-rose-800'
+                        : item.status === 'INFO_REQUESTED'
+                        ? 'bg-blue-100 text-blue-800'
+                        : item.status === 'FRAUD_CONFIRMED'
+                        ? 'bg-purple-100 text-purple-800'
+                        : item.status === 'IN_REVIEW'
+                        ? 'bg-amber-100 text-amber-800'
+                        : 'bg-slate-100 text-slate-700'
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+                  <button
+                    onClick={() => openDossier(item.id)}
+                    className="flex-1 py-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg font-semibold text-xs flex items-center justify-center gap-1 transition-all"
+                  >
+                    <FileSearch size={13} /> Dossier
+                  </button>
+                  {isActionable && (
+                    <>
+                      <button
+                        onClick={() => handleApprove(item.id)}
+                        className="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs transition-all shadow-xs"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleReject(item.id)}
+                        className="py-1.5 px-3 bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-700 rounded-lg font-bold text-xs transition-all"
+                      >
+                        Reject
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Main Escalation Table (screens >= md) */}
+      <div className="hidden md:block overflow-x-auto bg-white border border-slate-200 rounded-2xl shadow-sm">
         <table className="w-full text-left text-xs">
           <thead className="bg-slate-50/80 border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">
             <tr>
@@ -439,8 +568,8 @@ export const Dashboard: React.FC = () => {
 
       {/* Investigative Dossier Modal */}
       {selectedTicketId !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 p-6 space-y-6">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm p-0 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-4xl w-full max-h-[92vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 p-4 sm:p-6 space-y-4 sm:space-y-6">
             {dossierLoading ? (
               <div className="py-20 text-center text-slate-500 space-y-2">
                 <RefreshCw size={28} className="animate-spin mx-auto text-paytm-cyan" />
@@ -449,14 +578,14 @@ export const Dashboard: React.FC = () => {
             ) : dossier ? (
               <>
                 {/* Modal Header */}
-                <div className="flex items-start justify-between border-b border-slate-200 pb-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-1 bg-slate-900 text-paytm-cyan font-mono text-xs font-bold rounded-lg">
+                <div className="flex items-start justify-between border-b border-slate-200 pb-3 sm:pb-4">
+                  <div className="min-w-0 pr-2">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                      <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-slate-900 text-paytm-cyan font-mono text-[11px] sm:text-xs font-bold rounded-lg">
                         {dossier.dispute.dispute_code}
                       </span>
                       <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                        className={`px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-bold uppercase ${
                           dossier.escalation.priority === 'CRITICAL'
                             ? 'bg-rose-100 text-rose-800'
                             : 'bg-amber-100 text-amber-800'
@@ -464,18 +593,18 @@ export const Dashboard: React.FC = () => {
                       >
                         {dossier.escalation.priority} PRIORITY
                       </span>
-                      <span className="px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-[10px] font-bold">
+                      <span className="px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-[9px] sm:text-[10px] font-bold">
                         STATUS: {dossier.escalation.status}
                       </span>
                     </div>
-                    <h2 className="text-lg font-bold text-slate-900 mt-2">
+                    <h2 className="text-base sm:text-lg font-bold text-slate-900 mt-1.5">
                       Investigative Financial Truth Dossier
                     </h2>
-                    <p className="text-xs text-slate-500">{dossier.escalation.reason}</p>
+                    <p className="text-xs text-slate-500 line-clamp-2">{dossier.escalation.reason}</p>
                   </div>
                   <button
                     onClick={() => setSelectedTicketId(null)}
-                    className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
+                    className="p-1.5 sm:p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 shrink-0 text-base leading-none"
                   >
                     ✕
                   </button>
@@ -699,44 +828,46 @@ export const Dashboard: React.FC = () => {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex flex-wrap items-center gap-2 pt-2">
+                  <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 pt-2">
                     <button
                       onClick={() => handleApprove(dossier.escalation.id)}
                       disabled={actionInProgress}
-                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-1.5"
+                      className="px-4 py-2.5 sm:py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 active:scale-95"
                     >
                       <CheckCircle2 size={14} /> 1-Click Approve & Disburse Bridge Credit
                     </button>
 
-                    <button
-                      onClick={() => handleRequestInfo(dossier.escalation.id)}
-                      disabled={actionInProgress}
-                      className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-1.5"
-                    >
-                      <HelpCircle size={14} /> Request Customer Info
-                    </button>
+                    <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => handleRequestInfo(dossier.escalation.id)}
+                        disabled={actionInProgress}
+                        className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 active:scale-95"
+                      >
+                        <HelpCircle size={14} /> Request Info
+                      </button>
 
-                    <button
-                      onClick={() => handleReject(dossier.escalation.id)}
-                      disabled={actionInProgress}
-                      className="px-3.5 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-1.5"
-                    >
-                      <XCircle size={14} /> Reject Claim
-                    </button>
+                      <button
+                        onClick={() => handleReject(dossier.escalation.id)}
+                        disabled={actionInProgress}
+                        className="px-3.5 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 active:scale-95"
+                      >
+                        <XCircle size={14} /> Reject
+                      </button>
+                    </div>
 
                     <button
                       onClick={() => handleMarkFraud(dossier.escalation.id)}
                       disabled={actionInProgress}
-                      className="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-1.5"
+                      className="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-1.5 active:scale-95"
                     >
                       <AlertTriangle size={14} /> Confirm Fraud & Block
                     </button>
 
-                    <div className="flex items-center gap-1 ml-auto">
+                    <div className="flex items-center gap-1 sm:ml-auto w-full sm:w-auto">
                       <select
                         value={assignee}
                         onChange={(e) => setAssignee(e.target.value)}
-                        className="px-2.5 py-2 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-700"
+                        className="flex-1 sm:flex-none px-2.5 py-2 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-700"
                       >
                         <option value="SUPERVISOR_SPECIALIST_3">Specialist L2</option>
                         <option value="FRAUD_DESK_ANAND">Fraud Desk</option>
@@ -745,7 +876,7 @@ export const Dashboard: React.FC = () => {
                       <button
                         onClick={() => handleAssign(dossier.escalation.id)}
                         disabled={actionInProgress}
-                        className="px-3 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-black transition-all"
+                        className="px-3.5 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-black transition-all active:scale-95"
                       >
                         Assign
                       </button>

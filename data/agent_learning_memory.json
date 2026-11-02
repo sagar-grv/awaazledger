@@ -1,12 +1,12 @@
 {
   "version": "1.0",
-  "total_adaptations": 87,
+  "total_adaptations": 93,
   "calibrated_confidence_boost": 0.15,
   "language_distribution": {
-    "hi": 58,
+    "hi": 62,
     "en": 4,
-    "mr": 25
+    "mr": 27
   },
   "learned_entity_patterns": [],
-  "last_updated": "2026-10-31T10:48:52.976416"
+  "last_updated": "2026-11-02T18:59:03.000373"
 }

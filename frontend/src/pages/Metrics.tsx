@@ -53,19 +53,19 @@ export const Metrics: React.FC = () => {
   const health = dashboard?.operations_health;
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 pb-12">
+    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 pb-12">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <BarChart3 className="text-paytm-darkNavy" size={24} /> Autonomous Fintech Operations & SLA Analytics
+          <h1 className="text-base sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+            <BarChart3 className="text-paytm-darkNavy shrink-0" size={22} /> Autonomous Fintech Operations & SLA Analytics
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-[11px] sm:text-xs text-slate-500 mt-1">
             Real-time telemetry measuring autonomous self-healing, bridge credit risk exposure, and RBI regulatory TAT compliance.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setAutoRefresh(!autoRefresh)}
@@ -77,14 +77,14 @@ export const Metrics: React.FC = () => {
               title="Toggle automatic telemetry refreshing"
             >
               <span className={`w-2 h-2 rounded-full ${autoRefresh ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`}></span>
-              {autoRefresh ? 'Live Updates (10s)' : 'Paused'}
+              {autoRefresh ? 'Live (10s)' : 'Paused'}
             </button>
             <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">{lastRefreshed}</span>
           </div>
 
           {health && (
             <div
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold ${
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-bold ${
                 health.system_status === 'HEALTHY'
                   ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                   : health.system_status === 'ATTENTION_REQUIRED'
@@ -106,15 +106,15 @@ export const Metrics: React.FC = () => {
           <button
             onClick={() => loadData(false)}
             disabled={loading}
-            className="flex items-center gap-1.5 px-3 py-2 bg-paytm-darkNavy text-white hover:bg-slate-800 rounded-xl text-xs font-semibold shadow-sm transition-all"
+            className="flex items-center gap-1.5 px-3 py-2 bg-paytm-darkNavy text-white hover:bg-slate-800 rounded-xl text-xs font-semibold shadow-sm transition-all active:scale-95"
           >
-            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Refresh Telemetry
+            <RefreshCw size={13} className={loading ? 'animate-spin' : ''} /> Refresh
           </button>
         </div>
       </div>
 
       {/* Top 6 KPI Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {/* Card 1: Autonomous Resolution Rate */}
         <div className="p-5 bg-gradient-to-br from-white to-emerald-50/40 border border-emerald-200/80 rounded-2xl shadow-sm relative overflow-hidden">
           <div className="flex items-center justify-between">

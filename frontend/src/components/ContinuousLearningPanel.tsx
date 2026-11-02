@@ -83,14 +83,14 @@ export const ContinuousLearningPanel: React.FC = () => {
           </span>
           <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
             {learningData.recent_adaptations.map((a: any) => (
-              <div key={a.id} className="p-2.5 bg-slate-800/40 rounded-lg border border-slate-700/50 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="px-1.5 py-0.5 bg-indigo-500/20 text-indigo-300 rounded text-[10px] font-mono font-bold">
+              <div key={a.id} className="p-2.5 bg-slate-800/40 rounded-lg border border-slate-700/50 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="px-1.5 py-0.5 bg-indigo-500/20 text-indigo-300 rounded text-[10px] font-mono font-bold shrink-0">
                     {a.trigger_type}
                   </span>
-                  <span className="text-slate-200 font-medium">{a.adaptation_summary}</span>
+                  <span className="text-slate-200 font-medium truncate">{a.adaptation_summary}</span>
                 </div>
-                <div className="flex items-center gap-2 text-slate-400 text-[11px] font-mono shrink-0">
+                <div className="flex items-center gap-2 text-slate-400 text-[10px] sm:text-[11px] font-mono shrink-0">
                   <span>Conf: {a.confidence_score}</span>
                   <span>{a.created_at}</span>
                 </div>

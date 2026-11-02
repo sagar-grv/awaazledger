@@ -47,9 +47,9 @@ export const LiveCallConsole: React.FC = () => {
 
   return (
     <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
             <PhoneCall size={16} />
           </div>
           <div>
@@ -57,12 +57,12 @@ export const LiveCallConsole: React.FC = () => {
               Live Voice Call Telemetry Console
             </h3>
             <p className="text-[11px] text-slate-500">
-              Real-time monitoring of spoken vernacluar calls, STT accuracy & autonomous resolutions
+              Real-time monitoring of spoken vernacular calls, STT accuracy & autonomous resolutions
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto">
           <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             {calls.filter((c) => c.status === 'IN_PROGRESS').length} Active

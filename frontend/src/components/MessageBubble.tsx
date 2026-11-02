@@ -11,9 +11,9 @@ export const MessageBubble: React.FC<Props> = ({ message }) => {
   const isUser = message.sender === 'user';
 
   return (
-    <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} my-2`}>
+    <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} my-1.5 sm:my-2`}>
       <div
-        className={`max-w-xl px-4 py-3 rounded-2xl shadow-sm text-sm ${
+        className={`max-w-[92%] sm:max-w-xl px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl shadow-sm text-xs sm:text-sm break-words ${
           isUser
             ? 'bg-paytm-darkNavy text-white rounded-br-none'
             : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none'

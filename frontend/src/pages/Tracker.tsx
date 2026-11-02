@@ -128,32 +128,32 @@ export const Tracker: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
       {/* Brand Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 border-b border-slate-200 pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-paytm-darkNavy text-white flex items-center justify-center font-bold text-sm shadow-sm">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-paytm-darkNavy text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-sm shrink-0">
             paytm
           </div>
           <div>
-            <h1 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <h1 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
               Payment Dispute Helpdesk
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
+              <span className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
                 Live Status
               </span>
             </h1>
-            <p className="text-xs text-slate-500">
+            <p className="text-[11px] sm:text-xs text-slate-500">
               Autonomous self-healing dispute resolution for Paytm UPI payments
             </p>
           </div>
         </div>
 
         {/* Search Bar & View Mode Toggle */}
-        <div className="flex items-center gap-3">
-          <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1 text-xs font-medium shadow-xs">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full md:w-auto">
+          <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1 text-xs font-medium shadow-2xs justify-center">
             <button
               onClick={() => setViewMode('user')}
-              className={`px-3 py-1.5 rounded-md transition flex items-center gap-1.5 ${
+              className={`flex-1 sm:flex-none px-3 py-1.5 rounded-md transition flex items-center justify-center gap-1.5 ${
                 viewMode === 'user'
-                  ? 'bg-paytm-darkNavy text-white shadow-xs font-semibold'
+                  ? 'bg-paytm-darkNavy text-white shadow-2xs font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -162,32 +162,32 @@ export const Tracker: React.FC = () => {
             </button>
             <button
               onClick={() => setViewMode('technical')}
-              className={`px-3 py-1.5 rounded-md transition flex items-center gap-1.5 ${
+              className={`flex-1 sm:flex-none px-3 py-1.5 rounded-md transition flex items-center justify-center gap-1.5 ${
                 viewMode === 'technical'
-                  ? 'bg-paytm-darkNavy text-white shadow-xs font-semibold'
+                  ? 'bg-paytm-darkNavy text-white shadow-2xs font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <Layers size={14} />
-              Technical Audit Trace
+              Audit Trace
             </button>
           </div>
 
-          <form onSubmit={handleSearch} className="flex items-center gap-2">
-            <div className="relative">
+          <form onSubmit={handleSearch} className="flex items-center gap-1.5 sm:gap-2">
+            <div className="relative flex-1 sm:flex-none">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
               <input
                 type="text"
                 value={searchCode}
                 onChange={(e) => setSearchCode(e.target.value)}
                 placeholder="Case Reference ID"
-                className="pl-9 pr-3 py-1.5 text-xs font-mono font-medium border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-paytm-blue w-44 bg-white"
+                className="w-full sm:w-44 pl-9 pr-3 py-1.5 text-xs font-mono font-medium border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-paytm-blue bg-white"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="px-3 py-1.5 bg-paytm-blue hover:bg-sky-500 text-white rounded-lg text-xs font-semibold transition disabled:opacity-50"
+              className="px-3.5 py-1.5 bg-paytm-blue hover:bg-sky-500 text-white rounded-lg text-xs font-semibold transition disabled:opacity-50 active:scale-95 shrink-0"
             >
               {loading ? '...' : 'Track'}
             </button>

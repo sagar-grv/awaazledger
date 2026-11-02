@@ -48,6 +48,7 @@ export const VoiceCall: React.FC = () => {
 
   // Feedback state
   const [feedbackSubmitted, setFeedbackSubmitted] = useState<boolean>(false);
+  const [mobileTab, setMobileTab] = useState<'call' | 'presets'>('call');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<any>(null);
@@ -268,53 +269,80 @@ export const VoiceCall: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6">
       {/* Header Banner */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="p-2 rounded-xl bg-sky-100 text-sky-800 font-extrabold text-xl">📞</span>
-            <h1 className="text-xl font-bold text-paytm-darkNavy">Paytm AwaazLedger Voice Teammate</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm flex items-center gap-1">
-              <Sparkles size={12} /> Sarvam AI Voice Agent (Saarika & Bulbul)
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="p-1.5 sm:p-2 rounded-xl bg-sky-100 text-sky-800 font-extrabold text-base sm:text-xl">📞</span>
+            <h1 className="text-base sm:text-xl font-bold text-paytm-darkNavy">Paytm AwaazLedger Voice Teammate</h1>
+            <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-2xs flex items-center gap-1">
+              <Sparkles size={11} /> Sarvam AI (Saarika & Bulbul)
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            "Call instead of chat. Same autonomous dispute-resolution brain." Powered by Sarvam AI Indic Speech-to-Text & Text-to-Speech for Hindi, Marathi & Hinglish shop-counter disputes.
+          <p className="text-[11px] sm:text-xs text-slate-500 mt-1">
+            "Call instead of chat. Same autonomous dispute-resolution brain." Indic STT & TTS for Hindi, Marathi & Hinglish shop-counter disputes.
           </p>
         </div>
 
         {/* Channel & Language Bar */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+        <div className="flex items-center justify-between sm:justify-end gap-2 w-full md:w-auto">
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold flex-1 sm:flex-none justify-around sm:justify-start">
             {(['hi', 'mr', 'en'] as const).map((l) => (
               <button
                 key={l}
                 onClick={() => setLanguage(l)}
-                className={`px-3 py-1 rounded-lg transition ${
-                  language === l ? 'bg-paytm-darkNavy text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                className={`px-2.5 sm:px-3 py-1 rounded-lg transition text-[11px] sm:text-xs font-bold ${
+                  language === l ? 'bg-paytm-darkNavy text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                {l === 'hi' ? '🇮🇳 हिंदी' : l === 'mr' ? '🚩 मराठी' : '🌐 English'}
+                {l === 'hi' ? '🇮🇳 हिंदी' : l === 'mr' ? '🚩 मराठी' : '🌐 EN'}
               </button>
             ))}
           </div>
 
           <button
             onClick={() => setAudioMuted(!audioMuted)}
-            className={`p-2 rounded-xl border transition ${
+            className={`p-2 rounded-xl border transition shrink-0 ${
               audioMuted ? 'bg-red-50 text-red-600 border-red-200' : 'bg-slate-100 text-slate-700 border-slate-200'
             }`}
             title={audioMuted ? 'Unmute Audio' : 'Mute Audio'}
           >
-            {audioMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+            {audioMuted ? <VolumeX size={17} /> : <Volume2 size={17} />}
           </button>
         </div>
       </div>
 
+      {/* Mobile Switcher (visible only on < lg) */}
+      <div className="lg:hidden flex items-center p-1 bg-slate-200/80 rounded-xl text-xs font-bold">
+        <button
+          onClick={() => setMobileTab('call')}
+          className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+            mobileTab === 'call'
+              ? 'bg-white text-paytm-darkNavy shadow-2xs font-extrabold'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Phone size={14} className={callActive ? 'text-emerald-500 animate-pulse' : ''} />
+          Call Dialogue {callActive && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />}
+        </button>
+        <button
+          onClick={() => setMobileTab('presets')}
+          className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+            mobileTab === 'presets'
+              ? 'bg-white text-paytm-darkNavy shadow-2xs font-extrabold'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <span>🔢</span> Keypad & Presets
+        </button>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Interactive Phone Screen */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col h-[640px]">
+        <div className={`lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col h-[520px] sm:h-[600px] lg:h-[640px] ${
+          mobileTab === 'call' ? 'flex' : 'hidden lg:flex'
+        }`}>
           {/* Call Status Bar */}
           <div className="p-4 border-b border-slate-200 bg-slate-50 rounded-t-2xl flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -500,7 +528,7 @@ export const VoiceCall: React.FC = () => {
         </div>
 
         {/* Right Column: DTMF Keypad & Judges Test Scenarios */}
-        <div className="space-y-6">
+        <div className={`space-y-6 ${mobileTab === 'presets' ? 'block' : 'hidden lg:block'}`}>
           {/* DTMF Keypad */}
           <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
