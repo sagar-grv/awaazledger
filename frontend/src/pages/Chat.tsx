@@ -64,21 +64,26 @@ export const Chat: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Initial welcome message tailored to selected user
+    // Initial welcome message tailored to selected user without wiping existing history
     const welcomeText =
       selectedUser.language === 'en'
         ? `Hello ${selectedUser.name}! I am AwaazLedger, your autonomous Paytm UPI teammate. If your UPI payment is stuck, debited, or not credited to the merchant, send me a message, voice note, or payment screenshot.`
         : `नमस्ते ${selectedUser.name}! 🙏 मैं AwaazLedger हूँ, आपका Paytm AI साथी। अगर आपका कोई UPI पेमेंट अटक गया है या पैसे कट गए हैं, तो मुझे मैसेज, वॉइस नोट या स्क्रीनशॉट भेजें।`;
 
-    setMessages([
-      {
-        id: 'welcome',
-        sender: 'agent',
-        text: welcomeText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        badge: 'AwaazLedger Support',
-      },
-    ]);
+    setMessages((prev) => {
+      if (prev.length === 0) {
+        return [
+          {
+            id: 'welcome',
+            sender: 'agent',
+            text: welcomeText,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            badge: 'AwaazLedger Support',
+          },
+        ];
+      }
+      return prev;
+    });
   }, [selectedUser]);
 
   useEffect(() => {
@@ -117,12 +122,12 @@ export const Chat: React.FC = () => {
     setActiveStepText('Verifying bank debit & NPCI switch status...');
 
     try {
-      // Run autonomous agent
-      const agentRunRes = await runAgentOnDispute(disputeId);
+      // Run autonomous agent with disputeCode context
+      const agentRunRes = await runAgentOnDispute(disputeId, disputeCode);
       setActiveStepText('Fetching live verification trace...');
 
-      // Fetch structured multi-node tracker
-      const trackerRes: TrackerResponse = await fetchTracker(disputeId);
+      // Fetch structured multi-node tracker with disputeCode context
+      const trackerRes: TrackerResponse = await fetchTracker(disputeId, disputeCode);
 
       // Determine badge
       let badge = 'Self-Healed (Auto)';

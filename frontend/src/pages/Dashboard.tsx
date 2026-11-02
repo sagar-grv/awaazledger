@@ -282,6 +282,36 @@ export const Dashboard: React.FC = () => {
 
       <LiveCallConsole />
 
+      {/* Global Supervisor Action Feedback Toast */}
+      {actionSuccessMsg && (
+        <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs rounded-xl flex items-center justify-between shadow-2xs animate-fadeIn">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={16} className="text-emerald-600 flex-shrink-0" />
+            <span className="font-bold">{actionSuccessMsg}</span>
+          </div>
+          <button
+            onClick={() => setActionSuccessMsg(null)}
+            className="text-emerald-700 hover:text-emerald-900 text-xs font-semibold px-2 py-0.5 rounded"
+          >
+            ✕ Dismiss
+          </button>
+        </div>
+      )}
+      {actionError && (
+        <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-900 text-xs rounded-xl flex items-center justify-between shadow-2xs animate-fadeIn">
+          <div className="flex items-center gap-2">
+            <AlertTriangle size={16} className="text-rose-600 flex-shrink-0" />
+            <span>{actionError}</span>
+          </div>
+          <button
+            onClick={() => setActionError(null)}
+            className="text-rose-700 hover:text-rose-900 text-xs font-semibold px-2 py-0.5 rounded"
+          >
+            ✕ Dismiss
+          </button>
+        </div>
+      )}
+
       {/* Filter Tabs */}
       <div className="flex items-center gap-1.5 sm:gap-2 border-b border-slate-200 pb-2 overflow-x-auto no-scrollbar touch-pan-x">
         {(['OPEN', 'CRITICAL', 'IN_REVIEW', 'RESOLVED', 'ALL'] as const).map((tab) => (

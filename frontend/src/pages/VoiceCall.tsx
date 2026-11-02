@@ -107,7 +107,9 @@ export const VoiceCall: React.FC = () => {
     window.speechSynthesis.speak(utterance);
   };
 
-  const handleStartCall = async () => {
+  const handleStartCall = async (overrideLang?: 'hi' | 'mr' | 'en'): Promise<string | null> => {
+    const langToUse = overrideLang || language;
+    if (overrideLang) setLanguage(overrideLang);
     setCallActive(true);
     setCallSeconds(0);
     setHistory([]);
@@ -117,7 +119,7 @@ export const VoiceCall: React.FC = () => {
     try {
       const data = await initiateCall({
         caller_phone: callerPhone,
-        language: language,
+        language: langToUse,
         channel: 'BROWSER_WEBRTC',
       });
       setCallSid(data.call_sid);
@@ -132,10 +134,12 @@ export const VoiceCall: React.FC = () => {
           timestamp: now,
         },
       ]);
-      speakText(data.agent_speech, language);
+      speakText(data.agent_speech, langToUse);
+      return data.call_sid;
     } catch (e) {
       console.error('Call initiation failed:', e);
       setCallActive(false);
+      return null;
     }
   };
 
@@ -155,8 +159,9 @@ export const VoiceCall: React.FC = () => {
     }
   };
 
-  const sendTurn = async (transcript: string, dtmf?: string) => {
-    if (!callSid || !callActive) return;
+  const sendTurn = async (transcript: string, dtmf?: string, activeSid?: string) => {
+    const sid = activeSid || callSid;
+    if (!sid) return;
 
     const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     setHistory((prev) => [
@@ -171,7 +176,7 @@ export const VoiceCall: React.FC = () => {
     setCustomInput('');
 
     try {
-      const data = await sendCallTurn(callSid, {
+      const data = await sendCallTurn(sid, {
         transcript: transcript,
         dtmf_digit: dtmf,
       });
@@ -204,6 +209,22 @@ export const VoiceCall: React.FC = () => {
       }
     } catch (e) {
       console.error('Turn send error:', e);
+    }
+  };
+
+  const handlePresetTrigger = async (transcript: string, lang?: 'hi' | 'mr' | 'en') => {
+    if (lang) setLanguage(lang);
+    if (!callActive || !callSid) {
+      const newSid = await handleStartCall(lang);
+      if (newSid) {
+        setTimeout(() => {
+          sendTurn(transcript, undefined, newSid);
+          setMobileTab('call');
+        }, 800);
+      }
+    } else {
+      sendTurn(transcript);
+      setMobileTab('call');
     }
   };
 
@@ -510,7 +531,7 @@ export const VoiceCall: React.FC = () => {
             <div className="flex items-center justify-between pt-1">
               {!callActive ? (
                 <button
-                  onClick={handleStartCall}
+                  onClick={() => handleStartCall()}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-md hover:bg-emerald-700 transition"
                 >
                   <Phone size={16} /> Call AI Teammate (Dial In)
@@ -568,45 +589,35 @@ export const VoiceCall: React.FC = () => {
 
             <div className="space-y-2">
               <button
-                disabled={!callActive}
-                onClick={() => sendTurn('Bhaiya Sharma Kirana par 450 rupaye kat gaye dukandar ko nahi mila. UTR 987654321012')}
-                className="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 hover:border-emerald-200 transition text-xs disabled:opacity-40"
+                onClick={() => handlePresetTrigger('Bhaiya Sharma Kirana par 450 rupaye kat gaye dukandar ko nahi mila. UTR 987654321012', 'hi')}
+                className="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 hover:border-emerald-200 transition text-xs active:scale-98"
               >
-                <div className="font-bold text-slate-800">1️⃣ Sharma Kirana (₹450)</div>
-                <div className="text-[10px] text-slate-500 mt-0.5">Instant Provisional Bridge Credit</div>
+                <div className="font-bold text-slate-800">1️⃣ Sharma Kirana (₹450 - Hindi)</div>
+                <div className="text-[10px] text-slate-500 mt-0.5">Instant Provisional Bridge Credit • UTR 987654321012</div>
               </button>
 
               <button
-                disabled={!callActive}
-                onClick={() => {
-                  setLanguage('mr');
-                  sendTurn('रिलायन्स फ्रेश मध्ये 780 रुपयांचा पेमेंट केला पण साउंडबॉक्स बोलला नाही. UTR 556677889900');
-                }}
-                className="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-sky-50 hover:border-sky-200 transition text-xs disabled:opacity-40"
+                onClick={() => handlePresetTrigger('रिलायन्स फ्रेश मध्ये 780 रुपयांचा पेमेंट केला पण साउंडबॉक्स बोलला नाही. UTR 556677889900', 'mr')}
+                className="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-sky-50 hover:border-sky-200 transition text-xs active:scale-98"
               >
                 <div className="font-bold text-slate-800">2️⃣ Reliance Fresh (₹780 - Marathi)</div>
-                <div className="text-[10px] text-slate-500 mt-0.5">Soundbox Offline • Digital Merchant Receipt</div>
+                <div className="text-[10px] text-slate-500 mt-0.5">Soundbox Offline • Digital Merchant Cashier Receipt</div>
               </button>
 
               <button
-                disabled={!callActive}
-                onClick={() => {
-                  setLanguage('en');
-                  sendTurn('Flight booking payment of 18500 rupees failed and money deducted. UTR 998877665544');
-                }}
-                className="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-200 transition text-xs disabled:opacity-40"
+                onClick={() => handlePresetTrigger('Flight booking payment of 18500 rupees failed and money deducted. UTR 998877665544', 'en')}
+                className="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-200 transition text-xs active:scale-98"
               >
                 <div className="font-bold text-slate-800">3️⃣ Flight Ticket (₹18,500 - English)</div>
-                <div className="text-[10px] text-slate-500 mt-0.5">High-Value Escalate to Human Supervisor</div>
+                <div className="text-[10px] text-slate-500 mt-0.5">High-Value Escalate to Human Supervisor (SLA: 15m)</div>
               </button>
 
               <button
-                disabled={!callActive}
-                onClick={() => sendTurn('Doodh wale ko 200 rupaye diya tha cut gaya par UTR nahi hai')}
-                className="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-purple-50 hover:border-purple-200 transition text-xs disabled:opacity-40"
+                onClick={() => handlePresetTrigger('Doodh wale ko 200 rupaye diya tha cut gaya par UTR nahi hai', 'hi')}
+                className="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-purple-50 hover:border-purple-200 transition text-xs active:scale-98"
               >
-                <div className="font-bold text-slate-800">4️⃣ Missing UTR Fallback</div>
-                <div className="text-[10px] text-slate-500 mt-0.5">Sends WhatsApp Tracker Link automatically</div>
+                <div className="font-bold text-slate-800">4️⃣ Missing UTR Fallback (Keypad 9)</div>
+                <div className="text-[10px] text-slate-500 mt-0.5">Automated WhatsApp Self-Service Link Dispatch</div>
               </button>
             </div>
           </div>
