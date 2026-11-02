@@ -3,7 +3,7 @@
 **Paytm Build for India AI Hackathon | Track 3: Autonomous AI Teammates**
 
 [![Build & Test Status](https://img.shields.io/badge/Unit%20Tests-143%2F143%20Passing-brightgreen)](backend/tests)
-[![Live Demo](https://img.shields.io/badge/Vercel-Live%20Demo-success?logo=vercel)](https://frontend-delta-ruby-46.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Vercel-Live%20Demo-success?logo=vercel)](https://awaazledger-sg.vercel.app/)
 [![Python Version](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
 [![Frontend](https://img.shields.io/badge/Frontend-React%2018%20%2B%20TypeScript%20%2B%20Vite-61dafb)](frontend)
 [![Compliance](https://img.shields.io/badge/RBI%20Compliance-DPSS%20No.629%20TAT%20T%2B1-orange)](docs/decision-policy.md)
@@ -138,7 +138,16 @@ Unlike static rule engines, AwaazLedger features an integrated **Continuous Lear
 
 ---
 
-## 🚀 Quickstart & One-Command Demo
+## 🚀 Quickstart & Live Demo
+
+### 🌐 Live Cloud Deployment (Instant Interactive Demo)
+Access the live production system immediately with zero local installation:
+**[https://awaazledger-sg.vercel.app/](https://awaazledger-sg.vercel.app/)**
+- **WhatsApp Simulator**: Vernacular voice notes, screenshots, and 4-step guided demo.
+- **Voice Call Teammate**: Sarvam AI multilingual spoken agent (Hindi, Marathi, English).
+- **Dispute Tracker**: 4-node ledger state timeline & forensic audit logs.
+- **Human Escalation Desk**: Interactive supervisor decisioning (Approve, Reject, Request Info, Flag Fraud).
+- **Fintech Operations & CSAT**: Real-time SLA analytics and continuous learning telemetry.
 
 ### 1. Unified Master Demo (Command-Line Orchestration)
 Runs the entire 8-phase demonstration pipeline across all scenarios with colored visual reporting:
@@ -147,11 +156,11 @@ cd awaazledger
 python scripts/run_full_demo.py
 ```
 
-### 2. Run Backend Unit Tests (136 Tests Passing)
+### 2. Run Backend Unit Tests (143 Tests Passing)
 ```powershell
 cd awaazledger/backend
 python -m pytest tests -q
-# Output: 136 passed in 2.54s
+# Output: 143 passed in 2.65s
 ```
 
 ### 3. Start Frontend & Backend Development Servers
