@@ -134,9 +134,9 @@ export const Tracker: React.FC = () => {
             paytm
           </div>
           <div>
-            <h1 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+            <h1 className="text-base sm:text-lg font-bold text-slate-900 flex items-center flex-wrap gap-x-2 gap-y-1">
               Payment Dispute Helpdesk
-              <span className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
+              <span className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 shrink-0">
                 Live Status
               </span>
             </h1>
@@ -284,7 +284,7 @@ export const Tracker: React.FC = () => {
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 text-white ${
                   statusInfo.step4Status === 'COMPLETED' ? 'bg-emerald-600' : 'bg-amber-600'
                 }`}>
-                  {statusInfo.step4Status === 'COMPLETED' ? '✓' : '⏳'}
+                  {statusInfo.step4Status === 'COMPLETED' ? '✓' : '…'}
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-slate-800">{statusInfo.step4Title}</h4>
@@ -347,7 +347,7 @@ export const Tracker: React.FC = () => {
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center justify-between gap-4 text-xs">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
-                💬
+                <HelpCircle size={16} />
               </div>
               <div>
                 <p className="font-semibold text-slate-800">Need more help or have a question?</p>
