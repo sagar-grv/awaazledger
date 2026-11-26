@@ -240,3 +240,16 @@ export interface MetricsDashboard {
   distributions: MetricsDistribution;
   operations_health: OperationsHealth;
 }
+
+export interface MerchantRecovery {
+  dispute_code: string;
+  merchant_recovery_id?: string;
+  status: string;
+  qr_url?: string;
+  collect_link?: string;
+  fallback_options?: string[];
+  merchant_message?: string;
+  customer_message?: string;
+  expires_at?: string;
+  message?: string;
+}
