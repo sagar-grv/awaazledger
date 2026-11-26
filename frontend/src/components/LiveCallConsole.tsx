@@ -119,13 +119,13 @@ export const LiveCallConsole: React.FC = () => {
 
                 {c.latest_caller_text && (
                   <p className="text-[11px] text-slate-600 line-clamp-1 bg-white p-1.5 rounded-lg border border-slate-100">
-                    🗣️ "{c.latest_caller_text}"
+                    <User size={11} className="inline-block -mt-0.5 mr-1" />"{c.latest_caller_text}"
                   </p>
                 )}
 
                 {c.latest_agent_speech && (
                   <p className="text-[11px] text-paytm-darkNavy line-clamp-1 bg-sky-50 p-1.5 rounded-lg border border-sky-100">
-                    🤖 "{c.latest_agent_speech}"
+                    <ShieldCheck size={11} className="inline-block -mt-0.5 mr-1" />"{c.latest_agent_speech}"
                   </p>
                 )}
 
