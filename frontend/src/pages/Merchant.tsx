@@ -95,8 +95,7 @@ export const Merchant: React.FC = () => {
       <div className="grid gap-3 md:grid-cols-2">
         {/* Disputes at this counter */}
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-3 sm:p-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Payments in transi
-          t</h3>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Payments in transit</h3>
           <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
             {disputes.map((d) => {
               const isActive = selected?.id === d.id;
