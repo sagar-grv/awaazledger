@@ -9,6 +9,7 @@ import {
   UserCheck,
   ChevronDown,
   Paperclip,
+  ShieldCheck,
 } from 'lucide-react';
 import { ChatMessage, DemoUser, TrackerResponse } from '../lib/types';
 import { MessageBubble } from '../components/MessageBubble';
@@ -68,7 +69,7 @@ export const Chat: React.FC = () => {
     const welcomeText =
       selectedUser.language === 'en'
         ? `Hello ${selectedUser.name}! I am AwaazLedger, your autonomous Paytm UPI teammate. If your UPI payment is stuck, debited, or not credited to the merchant, send me a message, voice note, or payment screenshot.`
-        : `नमस्ते ${selectedUser.name}! 🙏 मैं AwaazLedger हूँ, आपका Paytm AI साथी। अगर आपका कोई UPI पेमेंट अटक गया है या पैसे कट गए हैं, तो मुझे मैसेज, वॉइस नोट या स्क्रीनशॉट भेजें।`;
+        : `नमस्ते ${selectedUser.name}! मैं AwaazLedger हूँ, आपका Paytm AI साथी। अगर आपका कोई UPI पेमेंट अटक गया है या पैसे कट गए हैं, तो मुझे मैसेज, वॉइस नोट या स्क्रीनशॉट भेजें।`;
 
     setMessages((prev) => {
       if (prev.length === 0) {
@@ -320,7 +321,7 @@ export const Chat: React.FC = () => {
 
     try {
       // Step 1: Happy path
-      addSystemNote('🚀 Step 1 of 4: Vernacular voice dispute → Autonomous 3-Way Reconciliation → Instant Bridge Credit.');
+      addSystemNote('Step 1 of 4: Vernacular voice dispute → Autonomous 3-Way Reconciliation → Instant Bridge Credit.');
       const rohit = demoUsers.find((u) => u.user_id === 1) || demoUsers[0];
       setSelectedUser(rohit);
       await sleep(1000);
@@ -328,7 +329,7 @@ export const Chat: React.FC = () => {
       await sleep(2500);
 
       // Step 2: Fraud control
-      addSystemNote('🛡️ Step 2 of 4: Fraud Defense — Invalid synthetic UTR detection & Risk containment lock.');
+      addSystemNote('Step 2 of 4: Fraud Defense — Invalid synthetic UTR detection & Risk containment lock.');
       const vikram = demoUsers.find((u) => u.user_id === 3) || demoUsers[2];
       setSelectedUser(vikram);
       await sleep(1000);
@@ -336,7 +337,7 @@ export const Chat: React.FC = () => {
       await sleep(2500);
 
       // Step 3: High-value escalation
-      addSystemNote('👥 Step 3 of 4: Human Teammate Collaboration — Flight ticket exceeds autonomous ceiling (₹18,500 > ₹2,000). Routing to Supervisor Desk.');
+      addSystemNote('Step 3 of 4: Human Teammate Collaboration — Flight ticket exceeds autonomous ceiling (₹18,500 > ₹2,000). Routing to Supervisor Desk.');
       const priya = demoUsers.find((u) => u.user_id === 2) || demoUsers[1];
       setSelectedUser(priya);
       await sleep(1000);
@@ -344,14 +345,14 @@ export const Chat: React.FC = () => {
       await sleep(2500);
 
       // Step 4: Ghost success
-      addSystemNote('🧾 Step 4 of 4: Ghost-Success Detection — Beneficiary already credited on switch. Issuing Verified Digital Merchant Receipt.');
+      addSystemNote('Step 4 of 4: Ghost-Success Detection — Beneficiary already credited on switch. Issuing Verified Digital Merchant Receipt.');
       const sunita = demoUsers.find((u) => u.user_id === 5) || demoUsers[4];
       setSelectedUser(sunita);
       await sleep(1000);
       await handleQuickScenario('EDGE-01', '780 rupees payment kiya tha Reliance Fresh ko par app me pending dikh raha hai. UTR 556677889900.', 5);
       await sleep(1500);
 
-      addSystemNote('✨ Guided Demo Complete! Notice the multi-node tracker cards above. Open the "Operations Desk" tab to approve the flight ticket and the "Metrics" tab for real-time impact.');
+      addSystemNote('Guided Demo Complete! Notice the multi-node tracker cards above. Open the "Operations Desk" tab to approve the flight ticket and the "Metrics" tab for real-time impact.');
     } catch (e: any) {
       addSystemNote(`Guided demo note: ${e.message}`);
     } finally {
@@ -368,7 +369,7 @@ export const Chat: React.FC = () => {
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
       sender: 'user',
-      text: `🎙️ Sent voice note: "${file.name}"`,
+      text: `Sent voice note: "${file.name}"`,
       isAudio: true,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
@@ -427,7 +428,7 @@ export const Chat: React.FC = () => {
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
       sender: 'user',
-      text: `📸 Uploaded payment screenshot: "${file.name}"`,
+      text: `Uploaded payment screenshot: "${file.name}"`,
       imageUrl: previewUrl,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
@@ -482,7 +483,7 @@ export const Chat: React.FC = () => {
       <div className="bg-[#075E54] text-white px-3 sm:px-5 py-2.5 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
           <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#128C7E] flex items-center justify-center text-lg sm:text-xl shadow-inner shrink-0">
-            🛡️
+            <ShieldCheck size={20} />
           </div>
           <div className="min-w-0">
             <h2 className="text-xs sm:text-sm font-bold tracking-wide flex items-center gap-1.5 sm:gap-2 truncate">
@@ -528,7 +529,7 @@ export const Chat: React.FC = () => {
               >
                 {demoUsers.map((u) => (
                   <option key={u.user_id} value={u.user_id} className="text-slate-900 bg-white">
-                    {u.name} ({u.phone})
+                    {u.name}
                   </option>
                 ))}
               </select>
@@ -552,7 +553,7 @@ export const Chat: React.FC = () => {
             key={scn.id}
             onClick={() => handleQuickScenario(scn.id, scn.text, scn.user_id)}
             disabled={isProcessing}
-            className="text-[11px] sm:text-xs shrink-0 font-medium bg-white hover:bg-paytm-blue hover:text-white text-slate-700 px-2.5 py-1 rounded-full border border-slate-300/80 transition-all shadow-2xs disabled:opacity-50 active:scale-95"
+            className="text-[11px] sm:text-xs shrink-0 font-medium bg-white hover:bg-paytm-blue hover:text-white text-slate-700 px-3 py-2 sm:px-2.5 sm:py-1 rounded-full border border-slate-300/80 transition-all shadow-2xs disabled:opacity-50 active:scale-95"
           >
             {scn.label}
           </button>
