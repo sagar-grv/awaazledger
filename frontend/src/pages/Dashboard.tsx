@@ -15,6 +15,7 @@ import {
   assignEscalation,
 } from '../lib/api';
 import { SwarmShieldBanner } from '../components/SwarmShieldBanner';
+import { SwarmShieldRadar } from '../components/SwarmShieldRadar';
 import { LiveCallConsole } from '../components/LiveCallConsole';
 import {
   ShieldAlert,
@@ -279,6 +280,7 @@ export const Dashboard: React.FC = () => {
       </div>
 
       <SwarmShieldBanner />
+      <SwarmShieldRadar />
 
       <LiveCallConsole />
 
