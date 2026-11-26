@@ -68,9 +68,9 @@ export const ContinuousLearningPanel: React.FC = () => {
         <div className="p-4 bg-slate-800/60 rounded-xl border border-slate-700/80">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Multimodal Parity</span>
           <div className="flex items-center gap-2 mt-2">
-            <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/40 font-semibold">💬 Text</span>
-            <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/40 font-semibold">🎙️ Voice</span>
-            <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/40 font-semibold">📸 OCR</span>
+            <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/40 font-semibold">Text</span>
+            <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/40 font-semibold">Voice</span>
+            <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/40 font-semibold">OCR</span>
           </div>
           <p className="text-[10px] text-slate-400 mt-1">Full multimodal coverage</p>
         </div>
