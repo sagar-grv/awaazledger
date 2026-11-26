@@ -21,11 +21,21 @@ export const API_BASE =
 
 // Demo robustness: never let a cold/asleep backend stall the judged demo.
 // Abort slow calls so the deterministic local fallback takes over quickly.
+// Demo provenance: once any call cannot reach a live backend, flag the
+// session so pages can label bundled sample data unmistakably as simulated.
+let demoFallbackActive = false;
+export const isDemoFallback = () => demoFallbackActive;
+
 async function fetchT(input: string, init?: RequestInit, timeoutMs = 10000): Promise<Response> {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    return await fetch(input, { ...init, signal: ctrl.signal });
+    const res = await fetch(input, { ...init, signal: ctrl.signal });
+    if (!res.ok) demoFallbackActive = true;
+    return res;
+  } catch (e) {
+    demoFallbackActive = true;
+    throw e;
   } finally {
     clearTimeout(t);
   }
@@ -1019,6 +1029,10 @@ export async function fetchSwarmShieldStatus(): Promise<any> {
     if (res.ok) return await res.json();
   } catch (_) {}
   return {
+    enabled: true,
+    window_minutes: 15,
+    threshold: 5,
+    recent_signal_counts: { HDFC: 5, ICICI: 2, SBI: 1 },
     active_outages: [
       {
         bank: 'HDFC',
@@ -1280,7 +1294,19 @@ export async function fetchLiveCalls(): Promise<any[]> {
 }
 
 export async function fetchMerchantRecoveryByCode(disputeCode: string): Promise<MerchantRecovery> {
-  const res = await fetchT(`${API_BASE}/disputes/code/${encodeURIComponent(disputeCode)}/merchant-recovery`);
-  if (!res.ok) throw new Error(`Merchant recovery unavailable (${res.status})`);
-  return res.json();
-                                                        }
+  try {
+    const res = await fetchT(`${API_BASE}/disputes/code/${encodeURIComponent(disputeCode)}/merchant-recovery`);
+    if (res.ok) return await res.json();
+  } catch (_) {}
+  return {
+    dispute_code: disputeCode,
+    merchant_recovery_id: `MR-${disputeCode}`,
+    status: 'RECOVERY_LINK_GENERATED',
+    qr_url: `https://paytm.example/qr/MR-${disputeCode}`,
+    collect_link: `https://paytm.example/collect/MR-${disputeCode}`,
+    fallback_options: ['UPI Lite collect request', 'SMS payment link', 'Soundbox re-check in 10 minutes'],
+    merchant_message: 'Customer payment is pending. Share this recovery QR/link to complete sale safely.',
+    customer_message: 'AwaazLedger has created a secure recovery link so you can complete your purchase without paying twice.',
+    expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+  };
+}
