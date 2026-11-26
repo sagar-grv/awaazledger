@@ -249,7 +249,7 @@ export const Dashboard: React.FC = () => {
               title="Toggle automatic queue refreshing"
             >
               <span className={`w-2 h-2 rounded-full ${autoRefresh ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`}></span>
-              {autoRefresh ? 'Live Updates (5s)' : 'Paused'}
+              {autoRefresh ? 'Demo refresh (5s)' : 'Paused'}
             </button>
             <span className="text-[11px] text-slate-400 font-mono">{lastRefreshed}</span>
           </div>
