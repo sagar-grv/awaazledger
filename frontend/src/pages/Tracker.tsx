@@ -139,7 +139,7 @@ export const Tracker: React.FC = () => {
             <h1 className="text-base sm:text-lg font-bold text-slate-900 flex items-center flex-wrap gap-x-2 gap-y-1">
               Payment Dispute Helpdesk
               <span className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 shrink-0">
-                Live Status
+                Demo Status
               </span>
             </h1>
             <p className="text-[11px] sm:text-xs text-slate-500">
