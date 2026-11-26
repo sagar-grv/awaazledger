@@ -80,3 +80,50 @@ def test_swarm_shield_outage_detection_with_clusters(db_session):
     assert axis_outage["status"] == "ACTIVE"
     assert "AXIS" in axis_outage["advisory"]
     assert axis_outage["recommended_action"] == "ROUTE_UPI_LITE_FALLBACK"
+
+
+def test_swarm_shield_mixed_case_bank_aliases_combine(db_session):
+    """Regression: mixed-case bank spellings combine before threshold checks.
+
+    2 signals as 'AXIS' + 2 as 'Axis' must produce one normalized 'AXIS'
+    outage (4 >= threshold 3), not two banks each below threshold.
+    """
+    user = db_session.query(User).first()
+    now = datetime.now(timezone.utc)
+
+    for i, alias in enumerate(["AXIS", "AXIS", "Axis", "Axis"]):
+        txn = Transaction(
+            user_id=user.id,
+            utr=f"88880000000{i}",
+            amount=250.0,
+            merchant_name="Alias Mart",
+            bank=alias,
+            cbs_status="DEBIT_SUCCESS",
+            npcI_status="U30",
+            status="PENDING",
+            beneficiary_status="TIMEOUT",
+            created_at=now,
+        )
+        db_session.add(txn)
+        db_session.flush()
+        db_session.add(Dispute(
+            dispute_code=f"DISP-ALIAS-{i}",
+            user_id=user.id,
+            transaction_id=txn.id,
+            status="PENDING_VERIFICATION",
+            agent_decision="PENDING",
+            three_way_json='{"npci_status": "U30"}',
+            created_at=now,
+        ))
+    db_session.commit()
+
+    svc = SwarmShieldService(db_session)
+    res = svc.detect_active_outages()
+
+    counts = res["recent_signal_counts"]
+    assert "Axis" not in counts
+    assert counts.get("AXIS", 0) >= 4
+
+    outage_banks = [o["bank"] for o in res["active_outages"]]
+    assert "AXIS" in outage_banks
+    assert "Axis" not in outage_banks
