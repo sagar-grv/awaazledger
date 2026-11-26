@@ -295,7 +295,7 @@ export const VoiceCall: React.FC = () => {
       <div className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="p-1.5 sm:p-2 rounded-xl bg-sky-100 text-sky-800 font-extrabold text-base sm:text-xl">📞</span>
+            <span className="p-1.5 sm:p-2 rounded-xl bg-sky-100 text-sky-800 flex items-center justify-center"><Phone size={18} /></span>
             <h1 className="text-base sm:text-xl font-bold text-paytm-darkNavy">Paytm AwaazLedger Voice Teammate</h1>
             <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-2xs flex items-center gap-1">
               <Sparkles size={11} /> Sarvam AI (Saarika & Bulbul)
@@ -317,7 +317,7 @@ export const VoiceCall: React.FC = () => {
                   language === l ? 'bg-paytm-darkNavy text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                {l === 'hi' ? '🇮🇳 हिंदी' : l === 'mr' ? '🚩 मराठी' : '🌐 EN'}
+                {l === 'hi' ? 'हिंदी' : l === 'mr' ? 'मराठी' : 'EN'}
               </button>
             ))}
           </div>
@@ -355,7 +355,7 @@ export const VoiceCall: React.FC = () => {
               : 'text-slate-600 hover:text-slate-900'
           }`}
         >
-          <span>🔢</span> Keypad & Presets
+          Keypad & Presets
         </button>
       </div>
 
@@ -399,7 +399,7 @@ export const VoiceCall: React.FC = () => {
             {history.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center p-8 text-slate-400 space-y-3">
                 <div className="w-16 h-16 rounded-2xl bg-sky-50 flex items-center justify-center text-3xl">
-                  📞
+                  <Phone size={44} className="text-sky-300" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-700">AwaazLedger Vernacular Spoken Call</h3>
@@ -416,7 +416,7 @@ export const VoiceCall: React.FC = () => {
                 >
                   <div className="flex items-center gap-1.5 mb-1 px-1">
                     <span className="text-[10px] font-bold text-slate-400 uppercase">
-                      {msg.speaker === 'CALLER' ? '👤 Caller' : '🤖 Paytm AI Teammate'}
+                      {msg.speaker === 'CALLER' ? 'Caller' : 'Paytm AI Teammate'}
                     </span>
                     <span className="text-[9px] text-slate-300 font-mono">{msg.timestamp}</span>
                   </div>
@@ -431,7 +431,7 @@ export const VoiceCall: React.FC = () => {
                     <p className="font-medium leading-relaxed">{msg.text}</p>
                     {msg.translation && msg.speaker === 'AGENT' && (
                       <p className="mt-1.5 pt-1.5 border-t border-slate-100 text-[11px] text-slate-500 italic">
-                        🇬🇧 {msg.translation}
+                        EN: {msg.translation}
                       </p>
                     )}
                   </div>
@@ -554,7 +554,7 @@ export const VoiceCall: React.FC = () => {
           <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                <span>🔢</span> Spoken DTMF Dialpad
+                Spoken DTMF Dialpad
               </h3>
               <span className="text-[10px] text-slate-400">Audio tones active</span>
             </div>
@@ -592,7 +592,7 @@ export const VoiceCall: React.FC = () => {
                 onClick={() => handlePresetTrigger('Bhaiya Sharma Kirana par 450 rupaye kat gaye dukandar ko nahi mila. UTR 987654321012', 'hi')}
                 className="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-emerald-50 hover:border-emerald-200 transition text-xs active:scale-98"
               >
-                <div className="font-bold text-slate-800">1️⃣ Sharma Kirana (₹450 - Hindi)</div>
+                <div className="font-bold text-slate-800">1. Sharma Kirana (₹450 - Hindi)</div>
                 <div className="text-[10px] text-slate-500 mt-0.5">Instant Provisional Bridge Credit • UTR 987654321012</div>
               </button>
 
@@ -600,7 +600,7 @@ export const VoiceCall: React.FC = () => {
                 onClick={() => handlePresetTrigger('रिलायन्स फ्रेश मध्ये 780 रुपयांचा पेमेंट केला पण साउंडबॉक्स बोलला नाही. UTR 556677889900', 'mr')}
                 className="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-sky-50 hover:border-sky-200 transition text-xs active:scale-98"
               >
-                <div className="font-bold text-slate-800">2️⃣ Reliance Fresh (₹780 - Marathi)</div>
+                <div className="font-bold text-slate-800">2. Reliance Fresh (₹780 - Marathi)</div>
                 <div className="text-[10px] text-slate-500 mt-0.5">Soundbox Offline • Digital Merchant Cashier Receipt</div>
               </button>
 
@@ -608,7 +608,7 @@ export const VoiceCall: React.FC = () => {
                 onClick={() => handlePresetTrigger('Flight booking payment of 18500 rupees failed and money deducted. UTR 998877665544', 'en')}
                 className="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-200 transition text-xs active:scale-98"
               >
-                <div className="font-bold text-slate-800">3️⃣ Flight Ticket (₹18,500 - English)</div>
+                <div className="font-bold text-slate-800">3. Flight Ticket (₹18,500 - English)</div>
                 <div className="text-[10px] text-slate-500 mt-0.5">High-Value Escalate to Human Supervisor (SLA: 15m)</div>
               </button>
 
@@ -616,7 +616,7 @@ export const VoiceCall: React.FC = () => {
                 onClick={() => handlePresetTrigger('Doodh wale ko 200 rupaye diya tha cut gaya par UTR nahi hai', 'hi')}
                 className="w-full text-left p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-purple-50 hover:border-purple-200 transition text-xs active:scale-98"
               >
-                <div className="font-bold text-slate-800">4️⃣ Missing UTR Fallback (Keypad 9)</div>
+                <div className="font-bold text-slate-800">4. Missing UTR Fallback (Keypad 9)</div>
                 <div className="text-[10px] text-slate-500 mt-0.5">Automated WhatsApp Self-Service Link Dispatch</div>
               </button>
             </div>
