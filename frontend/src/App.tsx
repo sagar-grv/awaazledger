@@ -4,6 +4,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Tracker } from './pages/Tracker';
 import { Metrics } from './pages/Metrics';
 import { VoiceCall } from './pages/VoiceCall';
+import { Merchant } from './pages/Merchant';
 import {
   MessageSquare,
   ShieldAlert,
@@ -12,10 +13,12 @@ import {
   PhoneCall,
   Sparkles,
   Wifi,
+  Store,
+  Mic,
 } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'chat' | 'call' | 'dashboard' | 'tracker' | 'metrics'>(() => {
+  const [activeTab, setActiveTab] = useState<'chat' | 'call' | 'dashboard' | 'tracker' | 'metrics' | 'merchant'>(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get('tab');
@@ -23,12 +26,13 @@ export const App: React.FC = () => {
       if (tabParam === 'tracker' || window.location.pathname === '/tracker') return 'tracker';
       if (tabParam === 'dashboard' || window.location.pathname === '/dashboard') return 'dashboard';
       if (tabParam === 'metrics' || window.location.pathname === '/metrics') return 'metrics';
+      if (tabParam === 'merchant' || window.location.pathname === '/merchant') return 'merchant';
     }
     return 'chat';
   });
 
   // Keep URL updated when switching tabs (without reload)
-  const switchTab = (tab: 'chat' | 'call' | 'dashboard' | 'tracker' | 'metrics') => {
+  const switchTab = (tab: 'chat' | 'call' | 'dashboard' | 'tracker' | 'metrics' | 'merchant') => {
     setActiveTab(tab);
     if (typeof window !== 'undefined' && window.history) {
       const url = new URL(window.location.href);
@@ -38,7 +42,7 @@ export const App: React.FC = () => {
   };
 
   interface NavItem {
-    id: 'chat' | 'call' | 'dashboard' | 'tracker' | 'metrics';
+    id: 'chat' | 'call' | 'dashboard' | 'tracker' | 'metrics' | 'merchant';
     label: string;
     shortLabel: string;
     icon: any;
@@ -51,6 +55,7 @@ export const App: React.FC = () => {
     { id: 'call', label: 'Voice Call Teammate', shortLabel: 'Voice Call', icon: PhoneCall, badge: 'Sarvam AI', highlight: true },
     { id: 'dashboard', label: 'Human Escalations', shortLabel: 'Escalations', icon: ShieldAlert, badge: 'L2 Desk' },
     { id: 'tracker', label: 'Dispute Tracker', shortLabel: 'Tracker', icon: Activity, badge: 'Timeline' },
+    { id: 'merchant', label: 'Merchant Co-Pilot', shortLabel: 'Merchant', icon: Store, badge: 'New v3' },
     { id: 'metrics', label: 'SLA Metrics', shortLabel: 'Metrics', icon: BarChart2, badge: 'Live' },
   ];
 
@@ -62,7 +67,7 @@ export const App: React.FC = () => {
           {/* Brand Header */}
           <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-paytm-darkNavy to-slate-900 text-white flex items-center justify-center font-bold text-base sm:text-lg shadow-sm ring-1 ring-black/5">
-              🎙️
+              <Mic size={17} />
             </div>
             <div>
               <div className="flex items-center gap-1.5 sm:gap-2">
@@ -72,9 +77,9 @@ export const App: React.FC = () => {
                 <span className="text-[9px] sm:text-[10px] uppercase font-extrabold tracking-wider px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-sky-200/60">
                   Track 3
                 </span>
-                <span className="hidden md:inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Self-Healing Active
+                <span className="hidden md:inline-flex items-center gap-1 text-[10px] font-semibold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200/60">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  Demo - simulated rails, no live banking
                 </span>
               </div>
               <p className="text-[10px] sm:text-[11px] text-slate-500 hidden sm:block truncate max-w-[280px] md:max-w-none">
@@ -122,9 +127,9 @@ export const App: React.FC = () => {
 
           {/* Right Action / Status Badge */}
           <div className="flex items-center gap-2">
-            <div className="flex sm:hidden items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-lg">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Live AI
+            <div className="flex sm:hidden items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-1 rounded-lg">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              Demo - simulated
             </div>
             <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg font-medium border border-slate-200/50">
               <Wifi size={12} className="text-emerald-600" />
@@ -141,6 +146,7 @@ export const App: React.FC = () => {
         {activeTab === 'dashboard' && <Dashboard />}
         {activeTab === 'tracker' && <Tracker />}
         {activeTab === 'metrics' && <Metrics />}
+        {activeTab === 'merchant' && <Merchant />}
       </main>
 
       {/* Mobile Bottom Navigation Bar (Visible only on screens < 640px) */}
