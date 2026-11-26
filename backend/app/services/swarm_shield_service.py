@@ -1,7 +1,7 @@
 """Swarm Shield bank-outage detection service.
 
 Detects high-frequency cluster delays across banking switches (e.g. SBI, HDFC)
-and triggers proactive customer advisories and UPI Lite fallback routing.
+and raises customer advisories recommending the UPI Lite fallback.
 """
 
 from datetime import datetime, timezone, timedelta
@@ -52,7 +52,9 @@ class SwarmShieldService:
         bank_signal_counts: Dict[str, int] = {}
 
         for dispute, txn in recent_disputes:
-            bank = txn.bank or "UNKNOWN_BANK"
+            # Normalize bank alias upstream so mixed-case spellings of the same
+            # switch (e.g. "AXIS" vs "Axis") combine before threshold checks.
+            bank = (txn.bank or "UNKNOWN_BANK").strip().upper() or "UNKNOWN_BANK"
             npci_status = (txn.npcI_status or "").upper()
             three_way = dispute.three_way_json or ""
 
@@ -74,7 +76,7 @@ class SwarmShieldService:
                     "bank": bank,
                     "count": count,
                     "status": "ACTIVE",
-                    "advisory": f"Multiple UPI delays detected from {bank}. AwaazLedger is prioritizing provisional relief and fallback routing.",
+                    "advisory": f"Multiple UPI delays detected from {bank}. AwaazLedger prioritizes provisional relief and recommends the UPI Lite fallback (simulated advisory).",
                     "recommended_action": "ROUTE_UPI_LITE_FALLBACK",
                 })
 
