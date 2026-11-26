@@ -43,17 +43,17 @@ export const SwarmShieldBanner: React.FC = () => {
             <ShieldAlert size={16} />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="font-extrabold uppercase tracking-wider text-[10px] bg-amber-500/20 px-2 py-0.5 rounded text-amber-900">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="font-extrabold uppercase tracking-wider text-[10px] bg-amber-500/20 px-2 py-0.5 rounded text-amber-900 whitespace-nowrap">
                 Swarm Shield Active
               </span>
               <span className="font-semibold text-amber-800">Switch Outage Telemetry Alert</span>
             </div>
             {outages.map((outage, idx) => (
               <p key={idx} className="mt-1 text-slate-800 font-medium">
-                ⚠️ <strong className="text-amber-900">{outage.bank}</strong> switch delay cluster detected ({outage.count} signals in window). {outage.advisory}
+                <AlertTriangle size={13} className="inline-block -mt-0.5 mr-1" /><strong className="text-amber-900">{outage.bank}</strong> switch delay cluster detected ({outage.count} signals in window). {outage.advisory}
                 <span className="inline-flex items-center gap-1 font-bold text-amber-950 ml-1.5 bg-amber-100 px-1.5 py-0.5 rounded text-[10px]">
-                  Action: {outage.recommended_action}
+                  Recommends: UPI Lite fallback (simulated advisory)
                 </span>
               </p>
             ))}
