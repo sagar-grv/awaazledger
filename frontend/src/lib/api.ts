@@ -12,14 +12,28 @@ import {
   DemoUser,
   IngestResponse,
   TrackerResponse,
+  MerchantRecovery,
 } from './types';
 
 export const API_BASE =
   (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:8000/api/v1';
 
+
+// Demo robustness: never let a cold/asleep backend stall the judged demo.
+// Abort slow calls so the deterministic local fallback takes over quickly.
+async function fetchT(input: string, init?: RequestInit, timeoutMs = 10000): Promise<Response> {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    return await fetch(input, { ...init, signal: ctrl.signal });
+  } finally {
+    clearTimeout(t);
+  }
+}
+
 export async function fetchHealth(): Promise<{ status: string; service: string }> {
   try {
-    const res = await fetch(`${API_BASE}/health`);
+    const res = await fetchT(`${API_BASE}/health`);
     if (res.ok) return await res.json();
   } catch (_) {}
   return { status: 'healthy', service: 'AwaazLedger Cloud Prototype' };
@@ -27,7 +41,7 @@ export async function fetchHealth(): Promise<{ status: string; service: string }
 
 export async function fetchDemoUsers(): Promise<DemoUser[]> {
   try {
-    const res = await fetch(`${API_BASE}/ingest/demo-users`);
+    const res = await fetchT(`${API_BASE}/ingest/demo-users`);
     if (res.ok) return await res.json();
   } catch (_) {}
   return [
@@ -252,7 +266,7 @@ function getMockAgentReply(text: string, phone: string = '+919876543210', userId
       user_id: userId,
       needs_more_info: true,
       agent_message:
-        'नमस्ते Rohit Verma! 🙏 मैं AwaazLedger हूँ, आपका Paytm AI साथी। अगर आपका कोई UPI पेमेंट अटक गया है या पैसे कट गए हैं, तो मुझे मैसेज, वॉइस नोट या स्क्रीनशॉट भेजें।',
+        'नमस्ते Rohit Verma! मैं AwaazLedger हूँ, आपका Paytm AI साथी। अगर आपका कोई UPI पेमेंट अटक गया है या पैसे कट गए हैं, तो मुझे मैसेज, वॉइस नोट या स्क्रीनशॉट भेजें।',
       entities: {
         intent: 'GREETING',
         confidence: 0.98,
@@ -324,7 +338,7 @@ export async function ingestText(payload: {
   channel?: string;
 }): Promise<IngestResponse> {
   try {
-    const res = await fetch(`${API_BASE}/ingest/text`, {
+    const res = await fetchT(`${API_BASE}/ingest/text`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -349,10 +363,10 @@ export async function ingestVoice(
     if (payload.user_id) formData.append('user_id', String(payload.user_id));
     if (payload.channel) formData.append('channel', payload.channel);
 
-    const res = await fetch(`${API_BASE}/ingest/voice`, {
+    const res = await fetchT(`${API_BASE}/ingest/voice`, {
       method: 'POST',
       body: formData,
-    });
+    }, 25000);
     if (res.ok) return await res.json();
   } catch (_) {}
   return getMockAgentReply('भैया मैंने 450 रुपये का payment किया, account से कट गया UTR 987654321012 है।', payload.sender_phone, payload.user_id);
@@ -369,10 +383,10 @@ export async function ingestImage(
     if (payload.user_id) formData.append('user_id', String(payload.user_id));
     if (payload.channel) formData.append('channel', payload.channel);
 
-    const res = await fetch(`${API_BASE}/ingest/image`, {
+    const res = await fetchT(`${API_BASE}/ingest/image`, {
       method: 'POST',
       body: formData,
-    });
+    }, 25000);
     if (res.ok) return await res.json();
   } catch (_) {}
   return getMockAgentReply('Payment Screenshot OCR: UTR 112233445566 Amount ₹120.00 to Gupta Medical', payload.sender_phone, payload.user_id);
@@ -380,7 +394,7 @@ export async function ingestImage(
 
 export async function ingestDemoText(userId: number, scenario: string): Promise<IngestResponse> {
   try {
-    const res = await fetch(`${API_BASE}/ingest/demo-text`, {
+    const res = await fetchT(`${API_BASE}/ingest/demo-text`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id: userId, scenario }),
@@ -406,7 +420,7 @@ export async function ingestDemoText(userId: number, scenario: string): Promise<
 
 export async function runAgentOnDispute(disputeId: number, disputeCode?: string): Promise<any> {
   try {
-    const res = await fetch(`${API_BASE}/agent/run/${disputeId}`, {
+    const res = await fetchT(`${API_BASE}/agent/run/${disputeId}`, {
       method: 'POST',
     });
     if (res.ok) return await res.json();
@@ -439,7 +453,7 @@ export async function runAgentOnDispute(disputeId: number, disputeCode?: string)
 
 export async function runAgentByCode(disputeCode: string): Promise<any> {
   try {
-    const res = await fetch(`${API_BASE}/agent/run-code/${disputeCode}`, {
+    const res = await fetchT(`${API_BASE}/agent/run-code/${disputeCode}`, {
       method: 'POST',
     });
     if (res.ok) return await res.json();
@@ -449,7 +463,7 @@ export async function runAgentByCode(disputeCode: string): Promise<any> {
 
 export async function fetchTracker(disputeId: number, disputeCode?: string): Promise<TrackerResponse> {
   try {
-    const res = await fetch(`${API_BASE}/disputes/${disputeId}/tracker`);
+    const res = await fetchT(`${API_BASE}/disputes/${disputeId}/tracker`);
     if (res.ok) return await res.json();
   } catch (_) {}
 
@@ -459,7 +473,7 @@ export async function fetchTracker(disputeId: number, disputeCode?: string): Pro
 
 export async function fetchTrackerByCode(disputeCode: string): Promise<TrackerResponse> {
   try {
-    const res = await fetch(`${API_BASE}/disputes/code/${disputeCode}/tracker`);
+    const res = await fetchT(`${API_BASE}/disputes/code/${disputeCode}/tracker`);
     if (res.ok) return await res.json();
   } catch (_) {}
 
@@ -469,7 +483,7 @@ export async function fetchTrackerByCode(disputeCode: string): Promise<TrackerRe
 
 export async function fetchDisputes(): Promise<Dispute[]> {
   try {
-    const res = await fetch(`${API_BASE}/disputes/`);
+    const res = await fetchT(`${API_BASE}/disputes/`);
     if (res.ok) return await res.json();
   } catch (_) {}
 
@@ -625,7 +639,7 @@ export async function fetchEscalationsList(params?: {
 
   const qs = query.toString() ? `?${query.toString()}` : '';
   try {
-    const res = await fetch(`${API_BASE}/escalations${qs}`);
+    const res = await fetchT(`${API_BASE}/escalations${qs}`);
     if (res.ok) return await res.json();
   } catch (_) {}
 
@@ -647,7 +661,7 @@ export async function fetchEscalations(): Promise<Escalation[]> {
 
 export async function fetchEscalationDetail(id: number): Promise<EscalationDetail> {
   try {
-    const res = await fetch(`${API_BASE}/escalations/${id}`);
+    const res = await fetchT(`${API_BASE}/escalations/${id}`);
     if (res.ok) return await res.json();
   } catch (_) {}
 
@@ -739,7 +753,7 @@ export async function fetchEscalationDetail(id: number): Promise<EscalationDetai
 
 export async function approveEscalation(id: number, req?: SupervisorActionRequest): Promise<SupervisorActionResponse> {
   try {
-    const res = await fetch(`${API_BASE}/escalations/${id}/approve`, {
+    const res = await fetchT(`${API_BASE}/escalations/${id}/approve`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(req || {}),
@@ -767,7 +781,7 @@ export async function approveEscalation(id: number, req?: SupervisorActionReques
 
 export async function rejectEscalation(id: number, req?: SupervisorActionRequest): Promise<SupervisorActionResponse> {
   try {
-    const res = await fetch(`${API_BASE}/escalations/${id}/reject`, {
+    const res = await fetchT(`${API_BASE}/escalations/${id}/reject`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(req || {}),
@@ -793,7 +807,7 @@ export async function rejectEscalation(id: number, req?: SupervisorActionRequest
 
 export async function requestInfoEscalation(id: number, req?: SupervisorActionRequest): Promise<SupervisorActionResponse> {
   try {
-    const res = await fetch(`${API_BASE}/escalations/${id}/request-info`, {
+    const res = await fetchT(`${API_BASE}/escalations/${id}/request-info`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(req || {}),
@@ -819,7 +833,7 @@ export async function requestInfoEscalation(id: number, req?: SupervisorActionRe
 
 export async function markFraudEscalation(id: number, req?: SupervisorActionRequest): Promise<SupervisorActionResponse> {
   try {
-    const res = await fetch(`${API_BASE}/escalations/${id}/mark-fraud`, {
+    const res = await fetchT(`${API_BASE}/escalations/${id}/mark-fraud`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(req || {}),
@@ -846,7 +860,7 @@ export async function markFraudEscalation(id: number, req?: SupervisorActionRequ
 
 export async function assignEscalation(id: number, req?: { assigned_to?: string; note?: string; supervisor_id?: string }): Promise<SupervisorActionResponse> {
   try {
-    const res = await fetch(`${API_BASE}/escalations/${id}/assign`, {
+    const res = await fetchT(`${API_BASE}/escalations/${id}/assign`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(req || {}),
@@ -874,7 +888,7 @@ export async function assignEscalation(id: number, req?: { assigned_to?: string;
 // -------------------------------------------------------------
 export async function fetchMetricsSummary(): Promise<MetricsSummary> {
   try {
-    const res = await fetch(`${API_BASE}/metrics/summary`);
+    const res = await fetchT(`${API_BASE}/metrics/summary`);
     if (res.ok) return await res.json();
   } catch (_) {}
 
@@ -912,7 +926,7 @@ export async function fetchMetricsSummary(): Promise<MetricsSummary> {
 
 export async function fetchMetricsDashboard(): Promise<MetricsDashboard> {
   try {
-    const res = await fetch(`${API_BASE}/metrics/dashboard`);
+    const res = await fetchT(`${API_BASE}/metrics/dashboard`);
     if (res.ok) return await res.json();
   } catch (_) {}
 
@@ -966,7 +980,7 @@ export async function fetchMetricsDashboard(): Promise<MetricsDashboard> {
 
 export async function fetchOperationsHealth(): Promise<OperationsHealth> {
   try {
-    const res = await fetch(`${API_BASE}/metrics/operations-health`);
+    const res = await fetchT(`${API_BASE}/metrics/operations-health`);
     if (res.ok) return await res.json();
   } catch (_) {}
   const openCount = mockEscalations.filter((x) => x.status === 'OPEN').length;
@@ -983,7 +997,7 @@ export async function fetchOperationsHealth(): Promise<OperationsHealth> {
 
 export async function generateMerchantRecovery(disputeId: number): Promise<any> {
   try {
-    const res = await fetch(`${API_BASE}/disputes/${disputeId}/merchant-recovery`, {
+    const res = await fetchT(`${API_BASE}/disputes/${disputeId}/merchant-recovery`, {
       method: 'POST',
     });
     if (res.ok) return await res.json();
@@ -1001,7 +1015,7 @@ export async function generateMerchantRecovery(disputeId: number): Promise<any> 
 
 export async function fetchSwarmShieldStatus(): Promise<any> {
   try {
-    const res = await fetch(`${API_BASE}/swarm-shield`);
+    const res = await fetchT(`${API_BASE}/swarm-shield`);
     if (res.ok) return await res.json();
   } catch (_) {}
   return {
@@ -1019,7 +1033,7 @@ export async function fetchSwarmShieldStatus(): Promise<any> {
 
 export async function fetchLearningMetrics(): Promise<any> {
   try {
-    const res = await fetch(`${API_BASE}/metrics/learning`);
+    const res = await fetchT(`${API_BASE}/metrics/learning`);
     if (res.ok) return await res.json();
   } catch (_) {}
   return {
@@ -1071,7 +1085,7 @@ export async function initiateCall(payload: {
   channel?: string;
 }): Promise<CallTurnResponse> {
   try {
-    const res = await fetch(`${API_BASE}/calls/initiate`, {
+    const res = await fetchT(`${API_BASE}/calls/initiate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -1109,7 +1123,7 @@ export async function sendCallTurn(
   payload: { transcript?: string; dtmf_digit?: string }
 ): Promise<CallTurnResponse> {
   try {
-    const res = await fetch(`${API_BASE}/calls/${callSid}/turn`, {
+    const res = await fetchT(`${API_BASE}/calls/${callSid}/turn`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -1209,7 +1223,7 @@ export async function sendCallTurn(
 
 export async function endCall(callSid: string): Promise<any> {
   try {
-    const res = await fetch(`${API_BASE}/calls/${callSid}/end`, { method: 'POST' });
+    const res = await fetchT(`${API_BASE}/calls/${callSid}/end`, { method: 'POST' });
     if (res.ok) return await res.json();
   } catch (_) {}
   return { status: 'ENDED', call_sid: callSid };
@@ -1220,7 +1234,7 @@ export async function submitCallFeedback(
   payload: { rating: string; feedback_type: string; notes?: string }
 ): Promise<any> {
   try {
-    const res = await fetch(`${API_BASE}/calls/${callSid}/feedback`, {
+    const res = await fetchT(`${API_BASE}/calls/${callSid}/feedback`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -1232,7 +1246,7 @@ export async function submitCallFeedback(
 
 export async function fetchLiveCalls(): Promise<any[]> {
   try {
-    const res = await fetch(`${API_BASE}/calls/live`);
+    const res = await fetchT(`${API_BASE}/calls/live`);
     if (res.ok) return await res.json();
   } catch (_) {}
   return [
@@ -1264,3 +1278,9 @@ export async function fetchLiveCalls(): Promise<any[]> {
     },
   ];
 }
+
+export async function fetchMerchantRecoveryByCode(disputeCode: string): Promise<MerchantRecovery> {
+  const res = await fetchT(`${API_BASE}/disputes/code/${encodeURIComponent(disputeCode)}/merchant-recovery`);
+  if (!res.ok) throw new Error(`Merchant recovery unavailable (${res.status})`);
+  return res.json();
+                                                        }
