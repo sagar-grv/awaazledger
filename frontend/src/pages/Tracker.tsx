@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Dispute, TrackerResponse } from '../lib/types';
-import { fetchDisputes, fetchTrackerByCode } from '../lib/api';
+import { fetchDisputes, fetchTrackerByCode, isDemoFallback } from '../lib/api';
 import { TrackerCard } from '../components/TrackerCard';
 import {
   Search,
@@ -29,6 +29,7 @@ export const Tracker: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'user' | 'technical'>('user');
+  const [sampleMode, setSampleMode] = useState(false);
 
   useEffect(() => {
     fetchDisputes().then((data) => {
@@ -55,6 +56,7 @@ export const Tracker: React.FC = () => {
       setError(err?.message || `Dispute ${code} tracker record not found`);
       setActiveTracker(null);
     } finally {
+      setSampleMode(isDemoFallback());
       setLoading(false);
     }
   };
@@ -72,7 +74,7 @@ export const Tracker: React.FC = () => {
 
     if (dec.includes('AUTO_RESOLVE') || dec.includes('BRIDGE_CREDIT')) {
       return {
-        badge: 'Provisional Credit Added to Paytm Wallet',
+        badge: sampleMode ? 'Simulated Provisional Credit (demo scenario)' : 'Provisional Credit Added to Paytm Wallet',
         sub: `${amt} has been credited to your Paytm Wallet while banks complete settlement.`,
         bg: 'bg-emerald-50 border-emerald-200 text-emerald-900',
         badgeBg: 'bg-emerald-600 text-white',
@@ -194,6 +196,13 @@ export const Tracker: React.FC = () => {
           </form>
         </div>
       </div>
+
+      {sampleMode && activeTracker && (
+        <div className="flex items-start gap-2 text-xs text-sky-900 bg-sky-50 border border-sky-200 rounded-xl px-3 py-2 mb-4">
+          <AlertTriangle size={14} className="mt-0.5 shrink-0" />
+          <span><strong>Sample scenario (backend offline).</strong> This tracker, including any credit shown, is a bundled demo scenario - simulated, not a live wallet balance or real money movement.</span>
+        </div>
+      )}
 
       {error && (
         <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 flex items-center gap-2">
